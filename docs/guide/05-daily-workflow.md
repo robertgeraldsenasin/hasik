@@ -53,7 +53,7 @@ If the PR touches `packages/engine/**`, `packages/bots/**` or `tools/openings/**
 - **INCONCLUSIVE**: ran out of budget. Usually means the change is tiny. A maintainer
   can add `strength:override` after looking at the numbers.
 
-Pure refactors finish in seconds because the games are identical.
+Pure refactors pass right after the 30-pair minimum (about a minute) because the games are identical.
 
 ## 7. Review and merge
 

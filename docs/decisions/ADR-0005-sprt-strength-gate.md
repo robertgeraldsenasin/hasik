@@ -35,6 +35,6 @@ and give the same answer on any machine.
 
 ## Consequences
 
-- A refactor that does not change play resolves in a few pairs (identical games).
+- A refactor that does not change play resolves right after the 30-pair minimum (identical games).
 - A real change needs hundreds of pairs; at ~0.5 s per game on 4 cores this fits the budget.
 - The trinomial formula is kept and tested for comparison and for the README write-up.

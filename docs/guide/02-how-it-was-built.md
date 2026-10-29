@@ -68,7 +68,7 @@ different implementations agreeing is much stronger evidence than either alone.
 check invariants (98 shells always, input never mutated, incremental hash = full
 hash, games terminate) over thousands of games you didn't think of.
 
-Result: 46 engine tests; perft from the start position is 7 / 36 / 230 / 1,406 /
+Result: 47 engine tests; perft from the start position is 7 / 36 / 230 / 1,406 /
 8,293 / 48,263 at depths 1-6, locked as golden values.
 
 ## Step 4: The bots (`packages/bots`)

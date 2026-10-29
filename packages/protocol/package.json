@@ -1,0 +1,19 @@
+{
+  "name": "@hasik/protocol",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Typed contracts (zod schemas) shared by the web app, worker and server.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  }
+}

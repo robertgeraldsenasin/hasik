@@ -1,0 +1,52 @@
+{
+  "name": "hasik",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sungka (Filipino mancala) with AI that searches like a chess engine.",
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @hasik/web dev",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck && tsc -p tsconfig.json",
+    "test": "turbo run test",
+    "test:coverage": "turbo run test:coverage",
+    "lint": "eslint . --max-warnings=0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "boundaries": "node scripts/check-boundaries.mjs",
+    "perft": "pnpm --filter @hasik/engine perft",
+    "arena": "tsx packages/arena/src/cli.ts arena",
+    "roundrobin": "tsx packages/arena/src/cli.ts roundrobin",
+    "sprt": "tsx packages/arena/src/cli.ts sprt",
+    "openings": "tsx tools/openings/generate.ts",
+    "bench": "tsx tools/bench/bench.ts",
+    "readme:tables": "tsx scripts/gen-readme-tables.ts",
+    "e2e": "pnpm --filter @hasik/web test:e2e",
+    "verify": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm boundaries && pnpm readme:tables --check && pnpm test",
+    "ablation": "tsx tools/bench/ablation.ts"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@hasik/arena": "workspace:*",
+    "@hasik/bots": "workspace:*",
+    "@hasik/engine": "workspace:*",
+    "@types/node": "^22.19.0",
+    "@vitest/coverage-v8": "^5.0.5",
+    "esbuild": "^0.28.2",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "fast-check": "^4.10.2",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
+    "turbo": "^2.11.10",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.1",
+    "vitest": "^5.0.5"
+  }
+}

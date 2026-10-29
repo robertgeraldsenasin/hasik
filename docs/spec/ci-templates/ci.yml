@@ -1,0 +1,53 @@
+# DRAFT - adapt paths/commands once the repo exists. Check for newer action versions.
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Lint (includes Math.random ban in engine/bots)
+        run: pnpm lint
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Dependency boundaries
+        run: pnpm depcheck:boundaries
+      - name: Unit + property tests with coverage
+        run: pnpm test -- --coverage
+      - name: Perft golden tests
+        run: pnpm --filter engine perft:test
+      - name: Build
+        run: pnpm build
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: '**/coverage/**'
+
+  e2e:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: lts/*, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm --filter web build && pnpm --filter web test:e2e

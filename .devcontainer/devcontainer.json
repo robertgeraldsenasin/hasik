@@ -1,0 +1,21 @@
+{
+  // Same toolchain for both partners, in VS Code (Dev Containers extension) or GitHub Codespaces.
+  "name": "hasik",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:22",
+  "features": { "ghcr.io/devcontainers/features/github-cli:1": {} },
+  "postCreateCommand": "corepack enable && pnpm install && pnpm --filter @hasik/web exec playwright install --with-deps chromium",
+  "forwardPorts": [5173, 4173],
+  "portsAttributes": { "5173": { "label": "web (dev)" }, "4173": { "label": "web (preview)" } },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "vitest.explorer",
+        "ms-playwright.playwright",
+        "github.vscode-github-actions",
+        "github.vscode-pull-request-github"
+      ]
+    }
+  }
+}

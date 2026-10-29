@@ -1,0 +1,56 @@
+# DRAFT - SPRT strength gate for engine/bot changes.
+name: strength-gate
+on:
+  pull_request:
+    paths:
+      - 'packages/engine/**'
+      - 'packages/bots/**'
+      - 'packages/tablebase/**'
+
+jobs:
+  sprt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: lts/*, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - name: Build head engine
+        run: pnpm build --filter bots... && mkdir -p .sprt/head && cp -r packages/bots/dist .sprt/head/
+      - name: Build base engine (main)
+        run: |
+          git worktree add .sprt/base-src origin/main
+          cd .sprt/base-src && pnpm install --frozen-lockfile && pnpm build --filter bots...
+      - name: Choose mode
+        id: mode
+        run: |
+          if ${{ contains(github.event.pull_request.labels.*.name, 'engine:gainer') }}; then
+            echo "bounds=0,5" >> "$GITHUB_OUTPUT"; echo "mode=gainer" >> "$GITHUB_OUTPUT"
+          else
+            echo "bounds=-10,0" >> "$GITHUB_OUTPUT"; echo "mode=nonreg" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run SPRT (node-limited, paired openings)
+        run: |
+          pnpm sprt \
+            --base .sprt/base-src/packages/bots/dist \
+            --head .sprt/head/dist \
+            --bounds ${{ steps.mode.outputs.bounds }} --alpha 0.05 --beta 0.05 \
+            --nodes 20000 --openings tools/openings/openings.json \
+            --max-pairs 1000 --max-minutes 20 \
+            --out results/sprt.jsonl --summary sprt-summary.md
+      - uses: actions/upload-artifact@v4
+        with: { name: sprt-results, path: 'results/sprt.jsonl' }
+      - name: Comment summary on PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        with: { path: sprt-summary.md }
+      - name: Enforce result
+        run: |
+          RESULT=$(jq -r '.result' results/sprt-final.json)
+          OVERRIDE=${{ contains(github.event.pull_request.labels.*.name, 'strength:override') }}
+          if [ "$RESULT" = "H0" ]; then echo "Rejected: engine not proven acceptable"; exit 1; fi
+          if [ "$RESULT" = "inconclusive" ] && [ "$OVERRIDE" != "true" ]; then echo "Inconclusive: add strength:override to merge"; exit 1; fi

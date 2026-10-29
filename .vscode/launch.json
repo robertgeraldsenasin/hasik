@@ -1,0 +1,54 @@
+{
+  // Run and Debug panel (Ctrl+Shift+D). Breakpoints work in the TypeScript sources.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Web: debug in Chrome (start `dev: web app` task first)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/apps/web"
+    },
+    {
+      "name": "Tests: debug current test file",
+      "type": "node",
+      "request": "launch",
+      "autoAttachChildProcesses": true,
+      "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
+      "args": ["run", "${relativeFile}"],
+      "cwd": "${fileDirname}/..",
+      "smartStep": true,
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Arena: debug a short match",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "tsx",
+        "packages/arena/src/cli.ts",
+        "arena",
+        "--a",
+        "minimax:nodes=5000",
+        "--b",
+        "greedy",
+        "--pairs",
+        "2",
+        "--workers",
+        "1"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Perft: debug",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@hasik/engine", "perft", "4"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+# DRAFT - deploy on main. M1: static web only. M2: add server/worker images.
+name: deploy
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  packages: write
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    environment: github-pages
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: lts/*, cache: pnpm }
+      - run: pnpm install --frozen-lockfile && pnpm --filter web build
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: apps/web/dist }
+      - uses: actions/deploy-pages@v4
+
+  # M2: uncomment when apps/server exists
+  # server:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: docker/login-action@v3
+  #       with: { registry: ghcr.io, username: ${{ github.actor }}, password: ${{ secrets.GITHUB_TOKEN }} }
+  #     - uses: docker/build-push-action@v6
+  #       with:
+  #         file: infra/docker/server.Dockerfile
+  #         push: true
+  #         tags: ghcr.io/${{ github.repository }}/server:${{ github.sha }},ghcr.io/${{ github.repository }}/server:latest
+  #     - uses: superfly/flyctl-actions/setup-flyctl@master
+  #     - run: flyctl deploy --image ghcr.io/${{ github.repository }}/server:${{ github.sha }}
+  #       env: { FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }} }
+  #     - run: curl --fail https://YOUR-APP.fly.dev/healthz

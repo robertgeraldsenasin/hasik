@@ -1,0 +1,14 @@
+dist
+coverage
+node_modules
+pnpm-lock.yaml
+.turbo
+playwright-report
+test-results
+.sprt
+results/*.jsonl
+apps/web/public/data
+tools/openings/openings.json
+docs/spec
+results
+README.md

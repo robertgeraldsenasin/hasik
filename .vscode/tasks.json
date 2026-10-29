@@ -1,0 +1,53 @@
+{
+  // Terminal > Run Task... (or Ctrl+Shift+B for the default build task).
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "dev: web app",
+      "type": "shell",
+      "command": "pnpm dev",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "verify: everything CI checks",
+      "type": "shell",
+      "command": "pnpm verify",
+      "group": { "kind": "test", "isDefault": true },
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "pnpm build",
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": ["$tsc"]
+    },
+    { "label": "test: all", "type": "shell", "command": "pnpm test", "problemMatcher": [] },
+    {
+      "label": "test: e2e (Playwright)",
+      "type": "shell",
+      "command": "pnpm --filter @hasik/web build && pnpm e2e",
+      "problemMatcher": []
+    },
+    { "label": "perft", "type": "shell", "command": "pnpm perft 6", "problemMatcher": [] },
+    {
+      "label": "arena: minimax vs greedy",
+      "type": "shell",
+      "command": "pnpm arena --a minimax:nodes=20000 --b greedy --pairs 50",
+      "problemMatcher": []
+    },
+    {
+      "label": "results: round robin + README tables",
+      "type": "shell",
+      "command": "pnpm roundrobin --pairs 40 && pnpm readme:tables",
+      "problemMatcher": []
+    },
+    {
+      "label": "results: bench + ablation",
+      "type": "shell",
+      "command": "pnpm bench && pnpm ablation && pnpm readme:tables",
+      "problemMatcher": []
+    }
+  ]
+}

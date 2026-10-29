@@ -1,0 +1,75 @@
+{
+  "kind": "ablation",
+  "generatedAt": "2026-10-29T13:17:35.314Z",
+  "hardware": {
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+    "cores": 2,
+    "ramGb": 8,
+    "os": "linux 6.18.44-fc-v185",
+    "node": "v22.23.4"
+  },
+  "nodes": 10000,
+  "pairs": 40,
+  "rows": [
+    {
+      "technique": "Transposition table",
+      "without": "minimax:nodes=10000,tt=0",
+      "wins": 39,
+      "draws": 6,
+      "losses": 35,
+      "score": 0.525,
+      "elo": {
+        "elo": 17.386277512436145,
+        "lo": -22.21873359961797,
+        "hi": 57.44998899049951,
+        "score": 0.525,
+        "samples": 40
+      }
+    },
+    {
+      "technique": "Move ordering",
+      "without": "minimax:nodes=10000,order=0",
+      "wins": 40,
+      "draws": 6,
+      "losses": 34,
+      "score": 0.5375,
+      "elo": {
+        "elo": 26.10669260503662,
+        "lo": -16.600063894201924,
+        "hi": 69.61987005589408,
+        "score": 0.5375,
+        "samples": 40
+      }
+    },
+    {
+      "technique": "Extra-turn extension",
+      "without": "minimax:nodes=10000,ext=0",
+      "wins": 37,
+      "draws": 6,
+      "losses": 37,
+      "score": 0.5,
+      "elo": {
+        "elo": 0,
+        "lo": -34.157689580479826,
+        "hi": 34.1576895804798,
+        "score": 0.5,
+        "samples": 40
+      }
+    },
+    {
+      "technique": "Alpha-beta pruning",
+      "without": "minimax:nodes=10000,ab=0,order=0,tt=0",
+      "wins": 54,
+      "draws": 6,
+      "losses": 20,
+      "score": 0.7125,
+      "elo": {
+        "elo": 157.65880786195945,
+        "lo": 101.4788351424047,
+        "hi": 222.89641752369374,
+        "score": 0.7125,
+        "samples": 40
+      }
+    }
+  ]
+}

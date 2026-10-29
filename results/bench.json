@@ -1,0 +1,55 @@
+{
+  "kind": "bench",
+  "generatedAt": "2026-10-29T13:16:57.080Z",
+  "hardware": {
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+    "cores": 2,
+    "ramGb": 8,
+    "os": "linux 6.18.44-fc-v185",
+    "node": "v22.23.4"
+  },
+  "perft": {
+    "depth": 6,
+    "leaves": 48263,
+    "medianMs": 31,
+    "leavesPerSecond": 1548418
+  },
+  "search": [
+    {
+      "ms": 200,
+      "avgDepth": 7.6,
+      "nodesPerSecond": 774150
+    },
+    {
+      "ms": 1000,
+      "avgDepth": 9.2,
+      "nodesPerSecond": 783514
+    }
+  ],
+  "ablation": {
+    "depth": 6,
+    "positions": 10,
+    "rows": [
+      {
+        "name": "Plain minimax",
+        "nodes": 463805,
+        "ms": 250
+      },
+      {
+        "name": "+ alpha-beta pruning",
+        "nodes": 43036,
+        "ms": 34
+      },
+      {
+        "name": "+ move ordering",
+        "nodes": 9839,
+        "ms": 10
+      },
+      {
+        "name": "+ transposition table",
+        "nodes": 9816,
+        "ms": 25
+      }
+    ]
+  }
+}

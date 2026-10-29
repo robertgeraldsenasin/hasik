@@ -1,0 +1,26 @@
+{
+  "name": "@hasik/arena",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Match runner, round-robin tournaments and the SPRT strength-gate CLI.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@hasik/engine": "workspace:*",
+    "@hasik/bots": "workspace:*",
+    "@hasik/rating": "workspace:*",
+    "@hasik/sprt": "workspace:*",
+    "tsx": "^4.23.15"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

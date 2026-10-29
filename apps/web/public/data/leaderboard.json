@@ -1,0 +1,622 @@
+{
+  "kind": "roundrobin",
+  "generatedAt": "2026-10-29T13:24:07.554Z",
+  "hardware": {
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+    "cores": 2,
+    "ramGb": 8,
+    "os": "linux 6.18.44-fc-v185",
+    "node": "v22.23.4"
+  },
+  "params": {
+    "pairsPerPairing": 40,
+    "seed": 1,
+    "openings": 200,
+    "maxPlies": 1000,
+    "seconds": 358
+  },
+  "bots": [
+    {
+      "spec": "minimax:nodes=50000",
+      "name": "Minimax (50k nodes)",
+      "rating": 1887,
+      "rd": 26,
+      "vol": 0.06,
+      "games": 400,
+      "score": 0.875,
+      "vsGreedy": {
+        "score": 1,
+        "elo": {
+          "elo": null,
+          "lo": null,
+          "hi": null,
+          "score": 0,
+          "samples": 40
+        }
+      }
+    },
+    {
+      "spec": "minimax:nodes=5000",
+      "name": "Minimax (5k nodes)",
+      "rating": 1807,
+      "rd": 26,
+      "vol": 0.06,
+      "games": 400,
+      "score": 0.7975,
+      "vsGreedy": {
+        "score": 0.9812,
+        "elo": {
+          "elo": 687.5113590758285,
+          "lo": 528.6341054633874,
+          "hi": null,
+          "score": 0.01875,
+          "samples": 40
+        }
+      }
+    },
+    {
+      "spec": "mcts:playouts=5000",
+      "name": "MCTS (5k playouts)",
+      "rating": 1588,
+      "rd": 26,
+      "vol": 0.06,
+      "games": 400,
+      "score": 0.585,
+      "vsGreedy": {
+        "score": 0.9,
+        "elo": {
+          "elo": 381.69700377572997,
+          "lo": 285.51783068092334,
+          "hi": 561.2592150000032,
+          "score": 0.1,
+          "samples": 40
+        }
+      }
+    },
+    {
+      "spec": "mcts:playouts=1000",
+      "name": "MCTS (1k playouts)",
+      "rating": 1488,
+      "rd": 26,
+      "vol": 0.06,
+      "games": 400,
+      "score": 0.4888,
+      "vsGreedy": {
+        "score": 0.9187,
+        "elo": {
+          "elo": 421.3495929765357,
+          "lo": 319.5927229043636,
+          "hi": 633.48472716743,
+          "score": 0.08125,
+          "samples": 40
+        }
+      }
+    },
+    {
+      "spec": "greedy",
+      "name": "Greedy",
+      "rating": 1177,
+      "rd": 26,
+      "vol": 0.06,
+      "games": 400,
+      "score": 0.1875,
+      "vsGreedy": null
+    },
+    {
+      "spec": "random",
+      "name": "Random",
+      "rating": 1052,
+      "rd": 26,
+      "vol": 0.06,
+      "games": 400,
+      "score": 0.0663,
+      "vsGreedy": {
+        "score": 0.2625,
+        "elo": {
+          "elo": -179.45308676328997,
+          "lo": -266.11393905572555,
+          "hi": -109.61849144534904,
+          "score": 0.2625,
+          "samples": 40
+        }
+      }
+    }
+  ],
+  "pairings": [
+    {
+      "x": "random",
+      "y": "greedy",
+      "pairs": 40,
+      "games": 80,
+      "wins": 21,
+      "draws": 0,
+      "losses": 59,
+      "score": 0.2625,
+      "pentanomial": [
+        20,
+        0,
+        19,
+        0,
+        1
+      ],
+      "eloGames": {
+        "elo": -179.45308676328997,
+        "lo": -280.317708777913,
+        "hi": -100.76890505593852,
+        "score": 0.2625,
+        "samples": 80
+      },
+      "eloPairs": {
+        "elo": -179.45308676328997,
+        "lo": -266.11393905572555,
+        "hi": -109.61849144534904,
+        "score": 0.2625,
+        "samples": 40
+      },
+      "avgPlies": 20.375,
+      "adjudicated": 0
+    },
+    {
+      "x": "random",
+      "y": "minimax:nodes=5000",
+      "pairs": 40,
+      "games": 80,
+      "wins": 0,
+      "draws": 0,
+      "losses": 80,
+      "score": 0,
+      "pentanomial": [
+        40,
+        0,
+        0,
+        0,
+        0
+      ],
+      "eloGames": {
+        "elo": null,
+        "lo": null,
+        "hi": null,
+        "score": 0,
+        "samples": 80
+      },
+      "eloPairs": {
+        "elo": null,
+        "lo": null,
+        "hi": null,
+        "score": 0,
+        "samples": 40
+      },
+      "avgPlies": 23.9375,
+      "adjudicated": 0
+    },
+    {
+      "x": "random",
+      "y": "minimax:nodes=50000",
+      "pairs": 40,
+      "games": 80,
+      "wins": 0,
+      "draws": 0,
+      "losses": 80,
+      "score": 0,
+      "pentanomial": [
+        40,
+        0,
+        0,
+        0,
+        0
+      ],
+      "eloGames": {
+        "elo": null,
+        "lo": null,
+        "hi": null,
+        "score": 0,
+        "samples": 80
+      },
+      "eloPairs": {
+        "elo": null,
+        "lo": null,
+        "hi": null,
+        "score": 0,
+        "samples": 40
+      },
+      "avgPlies": 25.75,
+      "adjudicated": 0
+    },
+    {
+      "x": "random",
+      "y": "mcts:playouts=1000",
+      "pairs": 40,
+      "games": 80,
+      "wins": 4,
+      "draws": 1,
+      "losses": 75,
+      "score": 0.05625,
+      "pentanomial": [
+        35,
+        1,
+        4,
+        0,
+        0
+      ],
+      "eloGames": {
+        "elo": -489.8937751415378,
+        "lo": -854.1176347847944,
+        "hi": -371.82881887242115,
+        "score": 0.05625,
+        "samples": 80
+      },
+      "eloPairs": {
+        "elo": -489.8937751415378,
+        "lo": -819.7501939830023,
+        "hi": -374.75655401569605,
+        "score": 0.05625,
+        "samples": 40
+      },
+      "avgPlies": 22.975,
+      "adjudicated": 0
+    },
+    {
+      "x": "random",
+      "y": "mcts:playouts=5000",
+      "pairs": 40,
+      "games": 80,
+      "wins": 1,
+      "draws": 0,
+      "losses": 79,
+      "score": 0.0125,
+      "pentanomial": [
+        39,
+        0,
+        1,
+        0,
+        0
+      ],
+      "eloGames": {
+        "elo": -759.0508365161766,
+        "lo": null,
+        "hi": -566.922416844906,
+        "score": 0.0125,
+        "samples": 80
+      },
+      "eloPairs": {
+        "elo": -759.0508365161766,
+        "lo": null,
+        "hi": -567.6806225368779,
+        "score": 0.0125,
+        "samples": 40
+      },
+      "avgPlies": 22.6,
+      "adjudicated": 0
+    },
+    {
+      "x": "greedy",
+      "y": "minimax:nodes=5000",
+      "pairs": 40,
+      "games": 80,
+      "wins": 1,
+      "draws": 1,
+      "losses": 78,
+      "score": 0.01875,
+      "pentanomial": [
+        38,
+        1,
+        1,
+        0,
+        0
+      ],
+      "eloGames": {
+        "elo": -687.5113590758285,
+        "lo": null,
+        "hi": -527.3847033504607,
+        "score": 0.01875,
+        "samples": 80
+      },
+      "eloPairs": {
+        "elo": -687.5113590758285,
+        "lo": null,
+        "hi": -528.6341054633874,
+        "score": 0.01875,
+        "samples": 40
+      },
+      "avgPlies": 22.7125,
+      "adjudicated": 0
+    },
+    {
+      "x": "greedy",
+      "y": "minimax:nodes=50000",
+      "pairs": 40,
+      "games": 80,
+      "wins": 0,
+      "draws": 0,
+      "losses": 80,
+      "score": 0,
+      "pentanomial": [
+        40,
+        0,
+        0,
+        0,
+        0
+      ],
+      "eloGames": {
+        "elo": null,
+        "lo": null,
+        "hi": null,
+        "score": 0,
+        "samples": 80
+      },
+      "eloPairs": {
+        "elo": null,
+        "lo": null,
+        "hi": null,
+        "score": 0,
+        "samples": 40
+      },
+      "avgPlies": 22.975,
+      "adjudicated": 0
+    },
+    {
+      "x": "greedy",
+      "y": "mcts:playouts=1000",
+      "pairs": 40,
+      "games": 80,
+      "wins": 6,
+      "draws": 1,
+      "losses": 73,
+      "score": 0.08125,
+      "pentanomial": [
+        33,
+        1,
+        6,
+        0,
+        0
+      ],
+      "eloGames": {
+        "elo": -421.3495929765357,
+        "lo": -654.0241892842253,
+        "hi": -315.5589067236852,
+        "score": 0.08125,
+        "samples": 80
+      },
+      "eloPairs": {
+        "elo": -421.3495929765357,
+        "lo": -633.48472716743,
+        "hi": -319.5927229043636,
+        "score": 0.08125,
+        "samples": 40
+      },
+      "avgPlies": 19.25,
+      "adjudicated": 0
+    },
+    {
+      "x": "greedy",
+      "y": "mcts:playouts=5000",
+      "pairs": 40,
+      "games": 80,
+      "wins": 8,
+      "draws": 0,
+      "losses": 72,
+      "score": 0.1,
+      "pentanomial": [
+        32,
+        0,
+        8,
+        0,
+        0
+      ],
+      "eloGames": {
+        "elo": -381.69700377572997,
+        "lo": -580.0248972360628,
+        "hi": -280.75065096112365,
+        "score": 0.1,
+        "samples": 80
+      },
+      "eloPairs": {
+        "elo": -381.69700377572997,
+        "lo": -561.2592150000032,
+        "hi": -285.51783068092334,
+        "score": 0.1,
+        "samples": 40
+      },
+      "avgPlies": 19.1125,
+      "adjudicated": 0
+    },
+    {
+      "x": "minimax:nodes=5000",
+      "y": "minimax:nodes=50000",
+      "pairs": 40,
+      "games": 80,
+      "wins": 33,
+      "draws": 2,
+      "losses": 45,
+      "score": 0.425,
+      "pentanomial": [
+        6,
+        1,
+        32,
+        1,
+        0
+      ],
+      "eloGames": {
+        "elo": -52.511565855727596,
+        "lo": -132.48802434837606,
+        "hi": 22.218507094359946,
+        "score": 0.425,
+        "samples": 80
+      },
+      "eloPairs": {
+        "elo": -52.511565855727596,
+        "lo": -94.67749838187241,
+        "hi": -11.833701521759691,
+        "score": 0.425,
+        "samples": 40
+      },
+      "avgPlies": 25.6375,
+      "adjudicated": 0
+    },
+    {
+      "x": "minimax:nodes=5000",
+      "y": "mcts:playouts=1000",
+      "pairs": 40,
+      "games": 80,
+      "wins": 67,
+      "draws": 2,
+      "losses": 11,
+      "score": 0.85,
+      "pentanomial": [
+        0,
+        0,
+        11,
+        2,
+        27
+      ],
+      "eloGames": {
+        "elo": 301.3310666634446,
+        "lo": 213.55182906448232,
+        "hi": 439.72236018869006,
+        "score": 0.85,
+        "samples": 80
+      },
+      "eloPairs": {
+        "elo": 301.3310666634446,
+        "lo": 221.02424627870704,
+        "hi": 421.6074493756202,
+        "score": 0.85,
+        "samples": 40
+      },
+      "avgPlies": 24.7875,
+      "adjudicated": 0
+    },
+    {
+      "x": "minimax:nodes=5000",
+      "y": "mcts:playouts=5000",
+      "pairs": 40,
+      "games": 80,
+      "wins": 57,
+      "draws": 3,
+      "losses": 20,
+      "score": 0.73125,
+      "pentanomial": [
+        2,
+        0,
+        16,
+        3,
+        19
+      ],
+      "eloGames": {
+        "elo": 173.88696246663002,
+        "lo": 97.2820452329318,
+        "hi": 270.62955899778626,
+        "score": 0.73125,
+        "samples": 80
+      },
+      "eloPairs": {
+        "elo": 173.88696246663002,
+        "lo": 101.65718996891424,
+        "hi": 263.69940167801786,
+        "score": 0.73125,
+        "samples": 40
+      },
+      "avgPlies": 24.1375,
+      "adjudicated": 0
+    },
+    {
+      "x": "minimax:nodes=50000",
+      "y": "mcts:playouts=1000",
+      "pairs": 40,
+      "games": 80,
+      "wins": 72,
+      "draws": 1,
+      "losses": 7,
+      "score": 0.90625,
+      "pentanomial": [
+        0,
+        0,
+        7,
+        1,
+        32
+      ],
+      "eloGames": {
+        "elo": 394.11069727171747,
+        "lo": 292.71166487986,
+        "hi": 597.6188959607656,
+        "score": 0.90625,
+        "samples": 80
+      },
+      "eloPairs": {
+        "elo": 394.11069727171747,
+        "lo": 297.31051661134,
+        "hi": 578.6421223879789,
+        "score": 0.90625,
+        "samples": 40
+      },
+      "avgPlies": 23.6625,
+      "adjudicated": 0
+    },
+    {
+      "x": "minimax:nodes=50000",
+      "y": "mcts:playouts=5000",
+      "pairs": 40,
+      "games": 80,
+      "wins": 69,
+      "draws": 5,
+      "losses": 6,
+      "score": 0.89375,
+      "pentanomial": [
+        0,
+        1,
+        5,
+        4,
+        30
+      ],
+      "eloGames": {
+        "elo": 369.95484643471536,
+        "lo": 277.9607568270409,
+        "hi": 532.6328017679629,
+        "score": 0.89375,
+        "samples": 80
+      },
+      "eloPairs": {
+        "elo": 369.95484643471536,
+        "lo": 277.3781191149097,
+        "hi": 534.5585272282071,
+        "score": 0.89375,
+        "samples": 40
+      },
+      "avgPlies": 24,
+      "adjudicated": 0
+    },
+    {
+      "x": "mcts:playouts=1000",
+      "y": "mcts:playouts=5000",
+      "pairs": 40,
+      "games": 80,
+      "wins": 25,
+      "draws": 4,
+      "losses": 51,
+      "score": 0.3375,
+      "pentanomial": [
+        11,
+        4,
+        25,
+        0,
+        0
+      ],
+      "eloGames": {
+        "elo": -117.1648421767207,
+        "lo": -203.28290268188488,
+        "hi": -43.17825337801201,
+        "score": 0.3375,
+        "samples": 80
+      },
+      "eloPairs": {
+        "elo": -117.1648421767207,
+        "lo": -173.50156001382598,
+        "hi": -66.23831544409754,
+        "score": 0.3375,
+        "samples": 40
+      },
+      "avgPlies": 21.4625,
+      "adjudicated": 0
+    }
+  ]
+}

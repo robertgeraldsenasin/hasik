@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Play Sungka, the Filipino mancala, against an AI that searches like a chess engine."
+    />
+    <meta name="theme-color" content="#6e3b1a" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Hasik · Sungka vs an engine</title>
+  </head>
+  <body>
+    <a class="skip" href="#app">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="#/play" aria-label="Hasik home">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <ellipse
+            cx="16"
+            cy="16"
+            rx="11"
+            ry="7.5"
+            fill="#f3e9d2"
+            stroke="#6e3b1a"
+            stroke-width="2"
+          />
+          <path d="M7 16 Q16 19 25 16" stroke="#6e3b1a" stroke-width="2" fill="none" />
+        </svg>
+        <span>Hasik</span>
+      </a>
+      <span class="tagline">Sungka against an engine that thinks like a chess engine</span>
+      <nav aria-label="Main">
+        <a href="#/play" data-page="play">Play</a>
+        <a href="#/leaderboard" data-page="leaderboard">Leaderboard</a>
+        <a href="#/about" data-page="about">How it works</a>
+      </nav>
+    </header>
+    <main id="app" tabindex="-1"></main>
+    <footer class="site-footer">
+      <span>Rules follow the variant in the project's ADR-0001; regional variants differ.</span>
+      <a href="https://github.com/robertgeraldsenasin/hasik">Source on GitHub</a>
+    </footer>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

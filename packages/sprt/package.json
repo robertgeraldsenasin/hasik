@@ -1,0 +1,16 @@
+{
+  "name": "@hasik/sprt",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sequential Probability Ratio Test math and Elo statistics for engine testing.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  }
+}

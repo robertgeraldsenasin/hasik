@@ -1,0 +1,16 @@
+{
+  "name": "@hasik/rating",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Glicko-2 rating system.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  }
+}

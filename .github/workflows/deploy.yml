@@ -1,0 +1,58 @@
+# Deploys the web app to GitHub Pages, but only after CI has passed on main,
+# so a broken commit never reaches the live site.
+name: deploy
+
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: ./.github/actions/setup
+      - name: Build for the Pages sub-path (/<repo>/)
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}/
+        run: pnpm --filter @hasik/web build
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: apps/web/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
+      - name: Post-deploy health check
+        run: |
+          for i in 1 2 3 4 5 6; do
+            if curl -fsS "${{ steps.deployment.outputs.page_url }}" | grep -q "Hasik"; then
+              echo "Live site is up: ${{ steps.deployment.outputs.page_url }}"; exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::The deployed page did not respond with the app"; exit 1

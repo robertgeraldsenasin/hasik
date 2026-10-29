@@ -1,0 +1,24 @@
+name: Feature or task
+description: A new feature, experiment or roadmap task
+labels: [enhancement]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should be possible afterwards, and why does it matter?
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Definition of done
+      description: How will we know it works? Which tests or numbers?
+  - type: dropdown
+    id: milestone
+    attributes:
+      label: Milestone
+      options:
+        - 'M1: MVP'
+        - 'M2: online play, tablebase'
+        - 'M3: stretch'

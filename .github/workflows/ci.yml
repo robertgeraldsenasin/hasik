@@ -1,0 +1,91 @@
+# Runs on every push to main and every pull request. Each job is a separate
+# required status check on main (see docs/guide/04-github-setup.md).
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - name: ESLint (includes the Math.random / Date.now ban in engine, bots, rating, sprt)
+        run: pnpm lint
+      - name: Prettier
+        run: pnpm format:check
+      - name: Dependency boundaries
+        run: pnpm boundaries
+      - name: README results tables match results/ (no hand-typed numbers)
+        run: pnpm readme:tables --check
+
+  typecheck:
+    name: typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - run: pnpm typecheck
+
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - name: Unit, property, perft-golden and search-correctness tests with coverage gates
+        run: pnpm test:coverage
+      - name: Coverage summary
+        if: always()
+        run: node scripts/coverage-summary.mjs >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: coverage
+          path: '**/coverage/lcov.info'
+          if-no-files-found: ignore
+
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - name: Build bots bundle and web app
+        run: pnpm build
+      - name: Perft speed (informational)
+        run: |
+          { echo '### Perft from the start position'; echo '```'; pnpm -s perft 6; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - name: Install Chromium for Playwright
+        run: pnpm --filter @hasik/web exec playwright install --with-deps chromium
+      - name: Build and run the smoke test against the production build
+        run: pnpm --filter @hasik/web build && pnpm --filter @hasik/web test:e2e
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report

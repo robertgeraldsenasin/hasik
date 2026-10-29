@@ -1,0 +1,95 @@
+# The strength gate: a pull request that touches the engine or the bots must
+# prove, with an SPRT match against the base branch, that it did not make the
+# engine weaker (or, with the engine:gainer label, that it made it stronger).
+# Method and settings: docs/decisions/ADR-0005-sprt-strength-gate.md.
+name: strength-gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+    paths:
+      - 'packages/engine/**'
+      - 'packages/bots/**'
+      - 'tools/openings/**'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: sprt-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  sprt:
+    name: sprt
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+
+      - name: Build the pull request's engine (head)
+        run: |
+          pnpm --filter @hasik/bots build
+          mkdir -p .sprt && cp packages/bots/dist/hasik-bots.mjs .sprt/head.mjs
+
+      - name: Build the base branch's engine (base)
+        run: |
+          git worktree add .sprt/base-src "origin/${{ github.base_ref }}"
+          cd .sprt/base-src
+          pnpm install --frozen-lockfile
+          pnpm --filter @hasik/bots build
+          cp packages/bots/dist/hasik-bots.mjs ../base.mjs
+
+      - name: Choose test mode from labels
+        id: mode
+        run: |
+          if [ "${{ contains(github.event.pull_request.labels.*.name, 'engine:gainer') }}" = "true" ]; then
+            echo "mode=gainer" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=nonreg" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run SPRT (fixed node budget, paired openings, all cores)
+        run: |
+          pnpm sprt \
+            --base .sprt/base.mjs --head .sprt/head.mjs \
+            --mode ${{ steps.mode.outputs.mode }} \
+            --spec minimax:nodes=10000 \
+            --alpha 0.05 --beta 0.05 \
+            --max-pairs 1000 --max-minutes 20 \
+            --workers "$(nproc)" \
+            --out results/sprt.jsonl --final results/sprt-final.json --summary sprt-summary.md
+          cat sprt-summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: sprt-results
+          path: |
+            results/sprt.jsonl
+            results/sprt-final.json
+
+      - name: Comment the result on the pull request
+        # Forks get a read-only token, so only comment for branches in this repo.
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository && hashFiles('sprt-summary.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr comment "${{ github.event.pull_request.number }}" --body-file sprt-summary.md --edit-last --create-if-none
+
+      - name: Enforce the result
+        run: |
+          RESULT=$(jq -r '.result' results/sprt-final.json)
+          OVERRIDE="${{ contains(github.event.pull_request.labels.*.name, 'strength:override') }}"
+          echo "SPRT result: $RESULT (override label: $OVERRIDE)"
+          if [ "$RESULT" = "H0" ]; then
+            echo "::error::Strength gate failed: the engine is not proven acceptable (H0 accepted)."
+            exit 1
+          fi
+          if [ "$RESULT" = "inconclusive" ] && [ "$OVERRIDE" != "true" ]; then
+            echo "::error::Strength gate inconclusive. A maintainer may add the strength:override label."
+            exit 1
+          fi

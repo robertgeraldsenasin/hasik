@@ -1,0 +1,22 @@
+name: Bug report
+description: Something is wrong (rules, AI, UI, CI)
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: How to reproduce
+      description: For game bugs, paste the game seed and bot spec shown under the move log, and the moves.
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Browser / OS / Node version

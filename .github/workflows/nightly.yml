@@ -1,0 +1,41 @@
+# Nightly tournament: replays the round robin with a fresh seed (new games, same
+# bots) and opens an issue if any bot's rating drops by more than 2 RD compared
+# with the committed results. Catches regressions the per-PR gate could miss.
+name: nightly
+
+on:
+  schedule:
+    - cron: '17 19 * * *' # 03:17 in Manila (UTC+8)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  tournament:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - name: Round robin with a fresh seed
+        run: |
+          pnpm roundrobin --pairs 40 --seed ${{ github.run_number }} --workers "$(nproc)" \
+            --out nightly/roundrobin.json --games nightly/pairs.jsonl --leaderboard nightly/leaderboard.json
+      - name: Compare with the committed results
+        id: drift
+        run: |
+          node scripts/check-rating-drift.mjs results/roundrobin.json nightly/roundrobin.json > drift.md
+          cat drift.md >> "$GITHUB_STEP_SUMMARY"
+          if grep -q "REGRESSION" drift.md; then echo "regression=true" >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/upload-artifact@v7
+        with:
+          name: nightly-results
+          path: nightly/
+      - name: Open an issue on a rating regression
+        if: steps.drift.outputs.regression == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create --title "Nightly tournament: rating regression (run ${{ github.run_number }})" --body-file drift.md

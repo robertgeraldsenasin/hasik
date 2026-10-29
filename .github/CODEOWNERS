@@ -1,0 +1,5 @@
+# Owners are requested for review automatically on matching PRs.
+*                   @robertgeraldsenasin
+/packages/engine/   @robertgeraldsenasin
+/packages/bots/     @robertgeraldsenasin
+/.github/           @robertgeraldsenasin

@@ -38,3 +38,12 @@ One entry per non-trivial bug: symptom, cause, fix, and the test that now guards
   divides by it) is huge. The SPRT's normal approximation needs a real variance estimate.
 - **Fix:** no decision before `minPairs` (default 30); ADR-0005 item 5.
 - **Test:** `makes no decision before the minimum sample, however extreme the LLR`.
+
+## 2026-10-30: boundary check would fail on Windows
+
+- **Symptom:** found in review before anyone hit it: `pnpm boundaries` (part of `pnpm verify`)
+  would fail on a Windows laptop while passing on Linux CI.
+- **Cause:** the script built its root folder from `new URL(import.meta.url).pathname`, which on
+  Windows is `/C:/Users/...`; `path.resolve` turns that into an invalid path.
+- **Fix:** `fileURLToPath(import.meta.url)` (`scripts/check-boundaries.mjs`); every other script
+  already used it.

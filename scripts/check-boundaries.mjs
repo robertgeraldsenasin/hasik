@@ -14,8 +14,10 @@
  */
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative, resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const ROOT = resolve(dirname(new URL(import.meta.url).pathname), '..');
+// fileURLToPath, not URL.pathname: on Windows the pathname is "/C:/...", which breaks path.resolve.
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const ALLOWED = {
   'packages/engine': { repo: [], external: [] },
   'packages/bots': { repo: ['engine'], external: [] },

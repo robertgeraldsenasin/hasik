@@ -48,17 +48,23 @@ describe('alpha-beta equals minimax', () => {
   });
 
   it('pruning, ordering and the TT do not change the root value (extensions on)', () => {
-    // Plain minimax with extensions is exponential, so this runs at depth 3 on 15 positions.
+    // Plain minimax with extra-turn extensions grows exponentially, so this compares at
+    // depth 3 with at most 2 extensions in a row: still exercises the extension logic, and
+    // runs in about a second instead of ~30 s under coverage on a CI runner.
+    const ext = { maxExtensions: 2 };
     for (const s of positions.slice(0, 15)) {
-      const plain = new MinimaxSearch({ alphaBeta: false, ordering: false, tt: false }).search(s, {
-        depth: 3,
-      });
+      const plain = new MinimaxSearch({
+        ...ext,
+        alphaBeta: false,
+        ordering: false,
+        tt: false,
+      }).search(s, { depth: 3 });
       for (const cfg of [
         { ordering: false, tt: false },
         { ordering: true, tt: false },
         { ordering: true, tt: true },
       ]) {
-        const r = new MinimaxSearch(cfg).search(s, { depth: 3 });
+        const r = new MinimaxSearch({ ...ext, ...cfg }).search(s, { depth: 3 });
         expect(r.score).toBe(plain.score);
       }
     }

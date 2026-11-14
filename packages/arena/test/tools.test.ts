@@ -23,10 +23,12 @@ describe('opening book', () => {
 
   it('reports progress while searching', () => {
     let calls = 0;
+    // Keep every position (huge maxAbsEval), so the run ends right after the
+    // progress report at 100 tries instead of hunting for perfectly even ones.
     generateOpenings({
-      count: 2,
+      count: 101,
       seed: 1,
-      maxAbsEval: 0,
+      maxAbsEval: 1e9,
       depth: 1,
       minPlies: 2,
       maxPlies: 6,

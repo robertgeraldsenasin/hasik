@@ -47,3 +47,17 @@ One entry per non-trivial bug: symptom, cause, fix, and the test that now guards
   Windows is `/C:/Users/...`; `path.resolve` turns that into an invalid path.
 - **Fix:** `fileURLToPath(import.meta.url)` (`scripts/check-boundaries.mjs`); every other script
   already used it.
+
+## 2026-11-14: first CI run on GitHub failed on a test timeout
+
+- **Symptom:** the `test` job failed on the very first push; lint, typecheck, build and e2e passed.
+  `pruning, ordering and the TT do not change the root value (extensions on)` timed out at
+  30.6 s (limit 30 s).
+- **Cause:** plain minimax with up to 4 extra-turn extensions in a row is exponential. Under
+  coverage instrumentation it took 29 s locally (passing by a hair) and slightly longer on
+  GitHub's runner.
+- **Fix:** the comparison uses at most 2 extensions in a row (still exercises the extension
+  logic): 29 s down to 1.4 s. The opening-book progress test (12 s on CI) now stops right after
+  its first progress report: 0.1 s.
+- **Lesson:** a test that passes "just under" a time limit locally will fail on a slower or
+  busier CI machine. Keep every test far below the limit.

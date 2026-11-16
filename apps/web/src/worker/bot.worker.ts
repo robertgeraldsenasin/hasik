@@ -7,6 +7,7 @@
 import { createBot } from '@hasik/bots';
 import { decodePosition } from '@hasik/engine';
 import type { WorkerRequest, WorkerResponse } from '@hasik/protocol';
+import { analyzePosition } from './analyze';
 
 const cache = new Map<string, ReturnType<typeof createBot>>();
 
@@ -14,13 +15,24 @@ self.onmessage = (ev: MessageEvent<WorkerRequest>) => {
   const req = ev.data;
   const reply = (msg: WorkerResponse) => (self as DedicatedWorkerGlobalScope).postMessage(msg);
   try {
+    const state = decodePosition(req.position);
+    const t0 = performance.now();
+    if (req.type === 'analyze') {
+      const a = analyzePosition(state, req.spec, req.seed, () => performance.now());
+      reply({
+        type: 'analysis',
+        id: req.id,
+        moves: a.moves,
+        nodes: a.nodes,
+        ms: performance.now() - t0,
+      });
+      return;
+    }
     let entry = cache.get(req.spec);
     if (!entry) {
       entry = createBot(req.spec);
       cache.set(req.spec, entry);
     }
-    const state = decodePosition(req.position);
-    const t0 = performance.now();
     const r = entry.bot.think(state, {
       ...entry.limits,
       seed: req.seed,

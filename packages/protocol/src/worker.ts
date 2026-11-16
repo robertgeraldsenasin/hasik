@@ -29,5 +29,34 @@ export interface ThinkError {
   readonly message: string;
 }
 
-export type WorkerRequest = ThinkRequest;
-export type WorkerResponse = ThinkResponse | ThinkError;
+/**
+ * Hint mode: score every legal move of a position for the player to move, so the
+ * board can show how good each house is (roadmap, milestone 2).
+ */
+export interface AnalyzeRequest {
+  readonly type: 'analyze';
+  readonly id: number;
+  /** encodePosition() text. */
+  readonly position: string;
+  /** Bot spec used to search each child position, e.g. "minimax:nodes=40000". */
+  readonly spec: string;
+  readonly seed: number;
+}
+
+export interface MoveScore {
+  readonly move: number;
+  /** From the mover's view, same units as ThinkResponse.score (minimax: shells x 100). */
+  readonly score: number;
+}
+
+export interface AnalyzeResponse {
+  readonly type: 'analysis';
+  readonly id: number;
+  /** One entry per legal move, best first. */
+  readonly moves: readonly MoveScore[];
+  readonly nodes: number;
+  readonly ms: number;
+}
+
+export type WorkerRequest = ThinkRequest | AnalyzeRequest;
+export type WorkerResponse = ThinkResponse | AnalyzeResponse | ThinkError;

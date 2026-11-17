@@ -77,6 +77,28 @@ test('keyboard shortcuts ignore modifier keys', async ({ page }) => {
   await expect(page.locator('[data-testid="move-log"] li')).toHaveCount(1);
 });
 
+test('a new game during the bot animation never lets the old bot move again', async ({ page }) => {
+  // Regression test for the 2026-11-16 race in docs/debug-log.md.
+  await page.goto('/?anim=slow&level=2');
+  await dismissHelp(page);
+  await page.locator('#side').selectOption('1'); // the bot moves first
+  // The insight panel fills in when the bot's search returns, right before its move animates.
+  await expect(page.locator('#insight')).toContainText('Evaluation', { timeout: 15_000 });
+  await page.getByTestId('new-game').click(); // mid-animation
+  await expect(page.getByTestId('status')).toContainText(/Your move|Extra turn/, {
+    timeout: 30_000,
+  });
+  await expect(page.locator('#retry')).toBeHidden();
+  await expect(page.locator('[data-testid="move-log"] li.you')).toHaveCount(0);
+  const log = page.locator('[data-testid="move-log"] li');
+  const played = await log.count();
+  expect(played).toBeGreaterThan(0);
+  // A stale bot turn would add a duplicate move that can't be replayed: the saved game must restore.
+  await page.reload();
+  await expect(page.locator('.toast', { hasText: 'Welcome back' })).toBeAttached();
+  await expect(log).toHaveCount(played);
+});
+
 test('leaderboard page loads', async ({ page }) => {
   await page.goto('/#/leaderboard');
   await expect(page.getByRole('heading', { name: 'Leaderboard' })).toBeVisible();

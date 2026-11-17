@@ -1,5 +1,7 @@
 # 03. Architecture
 
+> **Planning document (October 2026).** This is part of the original spec pack the project was built from. For the system as it is today, read [`docs/ARCHITECTURE.md`](../ARCHITECTURE.md); where the two differ, ARCHITECTURE.md and the code win.
+
 ## Principles
 
 1. **Pure core.** The rules engine and search have zero runtime dependencies and no I/O. They run the same in the browser, on the server, in workers and in CI.

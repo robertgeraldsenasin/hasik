@@ -2,7 +2,7 @@
 
 **Play Sungka, the Filipino mancala, against AI that searches like a chess engine.**
 
-[Play now](https://robertgeraldsenasin.github.io/hasik/) · [How it was built](docs/guide/02-how-it-was-built.md) · [Design decisions](docs/decisions/) · [Spec](docs/spec/)
+[Play now](https://robertgeraldsenasin.github.io/hasik/) · [Architecture](docs/ARCHITECTURE.md) · [How it was built](docs/guide/02-how-it-was-built.md) · [Design decisions](docs/decisions/) · [All docs](docs/README.md)
 
 [![ci](https://github.com/robertgeraldsenasin/hasik/actions/workflows/ci.yml/badge.svg)](https://github.com/robertgeraldsenasin/hasik/actions/workflows/ci.yml)
 [![deploy](https://github.com/robertgeraldsenasin/hasik/actions/workflows/deploy.yml/badge.svg)](https://github.com/robertgeraldsenasin/hasik/actions/workflows/deploy.yml)

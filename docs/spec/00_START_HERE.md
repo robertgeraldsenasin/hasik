@@ -1,5 +1,7 @@
 # Sungka Arena: Project Spec Pack
 
+> **Planning document (October 2026).** This is part of the original spec pack the project was built from. For the system as it is today, read [`docs/ARCHITECTURE.md`](../ARCHITECTURE.md); where the two differ, ARCHITECTURE.md and the code win.
+
 Version 1, Oct 29, 2026. Owner: Gerald Senasin (duo: Zea and Soul).
 
 This folder is everything needed to plan and build Sungka Arena without re-explaining it. Hand it to a new Claude chat, a Claude Project, or Claude Code, and point to the file you want to work from.

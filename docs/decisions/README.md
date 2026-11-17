@@ -14,5 +14,6 @@ supersedes the old one rather than editing history.
 | [0006](ADR-0006-hosting.md) | GitHub Pages for milestone 1; server hosting deferred | Accepted |
 | [0007](ADR-0007-monorepo-tooling.md) | pnpm + Turborepo with source-first internal packages | Accepted |
 | [0008](ADR-0008-opening-book.md) | 200 seeded openings within ±5 shells at depth 4 | Accepted |
+| [0009](ADR-0009-play-helpers-and-client-persistence.md) | Player helpers (preview, hints, undo) and validated client-side persistence | Accepted |
 
 Template: [ADR-template.md](ADR-template.md).

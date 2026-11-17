@@ -29,7 +29,7 @@ constraint C5 (never cut tests, the strength gate or the README results).
 | Retrograde endgame tablebase (N = 6, then 8)      | `packages/tablebase`; layered value iteration with a cycle cap; probe in minimax; test tablebase value = full search |
 | Ablations with more pairs                         | 200 pairs per technique to shrink the Elo intervals                                                                  |
 | TT reuse between moves                            | Measure with SPRT at fixed time (ADR-0002 follow-up)                                                                 |
-| Hint mode                                         | Show the evaluation of every legal move on the board                                                                 |
+| Hint mode (done)                                  | Every legal move searched with a fixed node budget; scores shown on the board (`apps/web/src/worker/analyze.ts`)     |
 | Fastify + WebSocket server                        | `apps/server`; validates every message with `packages/protocol`; rate limits; `/healthz`                             |
 | Postgres (Drizzle)                                | Games, moves, ratings, SPRT runs; replays                                                                            |
 | Redis + BullMQ worker                             | Scheduled tournaments; live leaderboard API                                                                          |

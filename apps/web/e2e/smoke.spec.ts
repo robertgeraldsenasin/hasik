@@ -1,9 +1,18 @@
-import { expect, test } from '@playwright/test';
+import { type Page, expect, test } from '@playwright/test';
 
-// The one end-to-end smoke test from the spec: load the page, start a game against
-// level 3, make three moves, and see the bot answer.
+/** First visits open the how-to-play dialog; close it so the board can be used. */
+async function dismissHelp(page: Page) {
+  const start = page.getByRole('button', { name: 'Start playing' });
+  await expect(start).toBeVisible();
+  await start.click();
+  await expect(page.locator('dialog#help')).not.toBeVisible();
+}
+
+// The smoke test from the spec: load the page, start a game against level 3,
+// make three moves, and see the bot answer.
 test('play three moves against level 3', async ({ page }) => {
   await page.goto('/?anim=instant');
+  await dismissHelp(page);
   await expect(page.getByRole('heading', { name: 'Moves' })).toBeVisible();
   await page.getByTestId('opponent').selectOption('level-3');
   await page.getByTestId('new-game').click();
@@ -21,6 +30,51 @@ test('play three moves against level 3', async ({ page }) => {
   const botMoves = page.locator('[data-testid="move-log"] li.bot');
   await expect(botMoves.first()).toBeVisible({ timeout: 20_000 });
   await expect(page.locator('[data-testid="move-log"] li.you')).not.toHaveCount(0);
+});
+
+test('preview, hint, undo and resume after a reload', async ({ page }) => {
+  await page.goto('/?anim=instant&level=2');
+  await dismissHelp(page);
+
+  // Preview: hovering house 1 explains the move before it is played.
+  await page.getByTestId('house-1').hover();
+  await expect(page.getByTestId('preview')).toContainText('last shell lands in your store');
+
+  // Hint: the engine scores every move and names the best house.
+  await page.getByTestId('hint').click();
+  await expect(page.getByTestId('status')).toContainText(/^Hint: house \d looks best/, {
+    timeout: 20_000,
+  });
+
+  // Play house 2 (ends the turn), let the bot answer, then take it all back.
+  await page.getByTestId('house-2').click();
+  const log = page.locator('[data-testid="move-log"] li');
+  await expect(page.locator('[data-testid="move-log"] li.bot').first()).toBeVisible({
+    timeout: 20_000,
+  });
+  await expect(page.getByTestId('status')).toContainText(/Your move|Extra turn/, {
+    timeout: 20_000,
+  });
+  const played = await log.count();
+  expect(played).toBeGreaterThanOrEqual(2);
+
+  // Reload: the game in progress is restored move for move, and help stays closed.
+  await page.reload();
+  await expect(log).toHaveCount(played);
+  await expect(page.locator('dialog#help')).not.toBeVisible();
+
+  await page.getByTestId('undo').click();
+  await expect(log).toHaveCount(0);
+  await expect(page.getByTestId('status')).toContainText('Your move');
+});
+
+test('keyboard shortcuts ignore modifier keys', async ({ page }) => {
+  await page.goto('/?anim=instant');
+  await dismissHelp(page);
+  await page.keyboard.press('Control+1');
+  await expect(page.locator('[data-testid="move-log"] li')).toHaveCount(0);
+  await page.keyboard.press('1');
+  await expect(page.locator('[data-testid="move-log"] li')).toHaveCount(1);
 });
 
 test('leaderboard page loads', async ({ page }) => {

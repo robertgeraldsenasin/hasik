@@ -17,6 +17,10 @@ export interface Frame {
   /** House the last move started from. */
   readonly lastMove: number | null;
   readonly captureFlash: ReadonlySet<number>;
+  /** Where the last shell would land if the hovered or focused house were played. */
+  readonly preview: number | null;
+  /** Hint mode: a score chip per house; the best one is drawn in gold. */
+  readonly hints: ReadonlyMap<number, { readonly label: string; readonly best: boolean }>;
 }
 
 const css = (name: string, fallback: string) =>
@@ -148,6 +152,47 @@ export class BoardRenderer {
         // House counts sit outside the pit: above the top row, below the bottom row.
         const labelY = g.y < h / 2 ? g.y - g.r - h * 0.045 : g.y + g.r + h * 0.05;
         ctx.fillText(String(n), g.x, labelY);
+      }
+    }
+
+    // Move preview: a soft glow and a dashed ring on the slot where the last shell lands.
+    if (f.preview !== null && f.active === null) {
+      const g = slots[f.preview]!;
+      ctx.beginPath();
+      ctx.ellipse(g.x, g.y, g.r + 4, g.ry + 4, 0, 0, Math.PI * 2);
+      ctx.globalAlpha = 0.2;
+      ctx.fillStyle = accent;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.setLineDash([7, 5]);
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = accent;
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Hint chips: the score of every legal move, best in gold.
+    if (f.hints.size > 0) {
+      const fs = Math.round(Math.max(11, Math.min(15, slots[0]!.r * 0.34)));
+      ctx.font = `700 ${fs}px system-ui, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      for (const [i, hint] of f.hints) {
+        const g = slots[i]!;
+        const tw = ctx.measureText(hint.label).width;
+        const cw = tw + 12;
+        const ch = fs + 8;
+        const cy = g.y - g.r * 0.98;
+        ctx.fillStyle = hint.best ? accent : 'rgba(20,10,4,0.82)';
+        roundRect(ctx, g.x - cw / 2, cy - ch / 2, cw, ch, ch / 2);
+        ctx.fill();
+        if (hint.best) {
+          ctx.strokeStyle = '#2a1606';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        }
+        ctx.fillStyle = hint.best ? '#2a1606' : ink;
+        ctx.fillText(hint.label, g.x, cy + 1);
       }
     }
 

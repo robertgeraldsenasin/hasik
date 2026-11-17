@@ -17,7 +17,8 @@
 - **AI:** negamax alpha-beta with iterative deepening, a two-tier transposition table, move ordering (TT move, extra turns, captures, killers, history) and an extra-turn extension; plus Monte Carlo Tree Search (UCT) as a second, independent AI.
 - **Ratings:** Glicko-2 leaderboard from round-robin tournaments over a committed opening book.
 - **CI strength gate:** every change to the engine plays the base branch in an SPRT match (Sequential Probability Ratio Test) and cannot merge unless it is proven not to be weaker. Stockfish's testing framework decides what ships the same way.
-- **Web app:** Canvas board with drop-by-drop sowing animation, bots in a Web Worker (the page never freezes), five difficulty levels plus MCTS, an engine-insight panel showing depth, nodes/s, evaluation and the expected line. About 10 KB gzipped.
+- **Web app:** Canvas board with drop-by-drop sowing animation, bots in a Web Worker (the page never freezes), five difficulty levels plus MCTS, an engine-insight panel showing depth, nodes/s, evaluation and the expected line. About 16 KB gzipped.
+- **Helpers for players:** a move preview that marks where the last shell lands, a hint mode that searches every legal move and puts its score on the board, undo, a game that survives a reload, a win record per opponent, sound effects, and a how-to-play guide. Every view passes an axe accessibility scan in light and dark mode.
 
 ## Results
 
@@ -132,7 +133,8 @@ flowchart LR
 | Golden | Perft counts at depths 0-6 lock the move generator |
 | Search | Alpha-beta = classic minimax; pruning, ordering and the TT never change the root value |
 | Statistics | Glickman's Glicko-2 example; hand-computed SPRT values |
-| End-to-end | Playwright plays three moves against level 3 on the production build |
+| Web | The move preview agrees with the engine on every legal move of many positions; a saved game is restored only if every move replays legally; hint mode scores a game-ending move exactly |
+| End-to-end | Playwright, on the production build: three moves against level 3; preview, hint, undo and resume after a reload; shortcuts ignore modifier keys |
 | Strength | The SPRT gate on every engine pull request |
 
 ## Decisions

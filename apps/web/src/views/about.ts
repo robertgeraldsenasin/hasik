@@ -31,7 +31,19 @@ export function mountAbout(root: HTMLElement): void {
     </ul>
     <p>Code, design records and the build guide: <a href="${REPO}">${REPO.replace('https://', '')}</a>.</p>
 
+    <h2>Helpers while you play</h2>
+    <ul>
+      <li><strong>Move preview:</strong> hover over or focus a house and the board marks where its last shell
+      lands, with what the move will do (extra turn, capture, relays).</li>
+      <li><strong>Hint mode:</strong> the engine searches every legal move with a fixed node budget and puts its
+      score on each house. Extra turns are handled the same way as in the search: if you keep the turn, the
+      score is not negated.</li>
+      <li><strong>Undo</strong>, a saved game that survives a reload, and a win record per opponent (games that
+      use hints or undo aren't counted).</li>
+    </ul>
+
     <h2>Keyboard</h2>
-    <p>Keys <kbd>1</kbd>–<kbd>7</kbd> play your houses from left to right; <kbd>N</kbd> starts a new game.</p>
+    <p><kbd>1</kbd>–<kbd>7</kbd> play your houses from left to right · <kbd>H</kbd> hint · <kbd>U</kbd> undo ·
+    <kbd>N</kbd> new game · <kbd>M</kbd> sound on or off · <kbd>?</kbd> how to play.</p>
   </section>`;
 }

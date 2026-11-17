@@ -1,7 +1,8 @@
 # Hasik build guide
 
 Step-by-step instructions, each with the reason behind it. Read in order the first
-time; afterwards use it as a reference.
+time; afterwards use it as a reference. The as-built architecture with diagrams is in
+[`docs/ARCHITECTURE.md`](../ARCHITECTURE.md); the docs index is [`docs/README.md`](../README.md).
 
 | # | Guide | Read it when |
 | --- | --- | --- |

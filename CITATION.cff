@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: 'If you use Hasik (the Sungka engine, bots or the SPRT strength gate), please cite it.'
+title: 'Hasik: Sungka engine, bots and a statistical strength gate'
+authors:
+  - family-names: Senasin
+    given-names: Robert Gerald
+    email: robertgeraldsenasin@gmail.com
+license: MIT
+repository-code: 'https://github.com/robertgeraldsenasin/hasik'
+url: 'https://robertgeraldsenasin.github.io/hasik/'
+date-released: 2026-11-14
+keywords: [sungka, mancala, game-ai, alpha-beta, mcts, glicko-2, sprt]

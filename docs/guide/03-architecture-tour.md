@@ -1,7 +1,8 @@
 # 03. Architecture tour
 
 Where everything lives, how the pieces talk, and which parts to be ready to
-whiteboard. Function names are given instead of line numbers so this stays accurate
+whiteboard. For the diagrams (C4 context, containers, packages, game loop, CI/CD), see
+[`docs/ARCHITECTURE.md`](../ARCHITECTURE.md). Function names are given instead of line numbers so this stays accurate
 as the code changes.
 
 ## The map
@@ -36,6 +37,15 @@ imports something it shouldn't, or reaches into another package with `../../`.
    (`createBot`), injects `performance.now` as the clock and searches.
 4. Back on the UI thread the move is checked with `isLegalMove`, applied with
    `applyMoveTraced`, and the event list is animated drop by drop.
+
+Since the play-experience update (ADR-0009):
+
+- **Hints:** `client.analyze()` sends an `AnalyzeRequest`; `worker/analyze.ts` searches every legal child
+  with a fixed node budget and keeps or flips the sign depending on who moves next.
+- **Preview:** `game/preview.ts` runs `applyMoveTraced` on hover or focus to show where the last shell lands.
+- **Persistence and undo:** `game/save.ts` validates everything read from `localStorage` and replays saved
+  moves through the engine before restoring a game; `undoTarget()` finds the last position with the human to move.
+- **Cancellation:** every async step carries the game token; new game, undo and leaving the page bump it.
 
 ## Data flow: the strength gate
 

@@ -2,6 +2,18 @@
 
 One entry per non-trivial bug: symptom, cause, fix, and the test that now guards it.
 
+## 2026-11-16: a new game during the bot's animation let the old game's bot move again
+
+- **Symptom:** starting a new game (or switching sides) while the bot's move was still animating could
+  make the bot move twice at the start of the new game.
+- **Cause:** `botTurn()` awaited `play()` and then always called `next()`. When the game changed mid-animation,
+  `play()` returned early but the stale `next()` still ran, so two bot turns raced in the new game.
+- **Fix:** `play()` now returns whether it completed, and callers continue only if it did; every async step
+  records the game token and stops when it changes (`apps/web/src/views/play.ts`).
+- **Test:** the end-to-end test `a new game during the bot animation never lets the old bot move again`
+  clicks New game five times during a slow bot animation, then checks there's no error or retry, no
+  human move in the log, and a saved move list that matches the log.
+
 ## 2026-10-29: wrong score sign when an extra turn ends the game
 
 - **Symptom:** in a position where moving into your own store left you with no shells,

@@ -56,7 +56,7 @@ describe('2.5D camera', () => {
       [portrait, { pitch: 30, distance: 1.2 }, fit(390, 400)],
     ] as const) {
       const P = makeProjection(layout, cam, f);
-      if ('maxHeight' in f) expect(P.height).toBeLessThanOrEqual(f.maxHeight);
+      if (f.maxHeight !== undefined) expect(P.height).toBeLessThanOrEqual(f.maxHeight);
       const depth = BOARD_DEPTH * Math.min(layout.width, layout.height);
       for (const x of [0, layout.width])
         for (const y of [0, layout.height])

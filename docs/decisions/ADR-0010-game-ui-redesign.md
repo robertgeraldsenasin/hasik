@@ -64,9 +64,9 @@ Option 3, drawn in 2.5D: a true perspective camera over a flat canvas.
   settings don't have; they load with the default.
 - In headless Chrome the scene holds 60 frames a second during a slow move, on a desktop viewport and on
   a 390 px viewport at 3× pixel density. The texture is re-laid only on resize and while the camera moves.
-- The page costs more to download: the CI build of this change is 28.4 KB of gzipped JavaScript
-  (75 KB minified) plus 5.1 KB of CSS, up from about 16 KB (ADR-0009). Still no framework and no
-  images, fonts or audio files.
+- The page costs more to download: the CI build is 31.9 KB of gzipped JavaScript (85 KB minified)
+  plus 5.1 KB of CSS, up from about 16 KB (ADR-0009). The 2.5D camera accounts for about 3.5 KB of
+  that. Still no framework and no images, fonts or audio files.
 - `board/renderer.ts` is gone. Its unit tests were on `layout.ts`, which keeps its API (one optional
   argument added).
 - The end-to-end tests change where the UI changed: the opponent and side are chosen in the picker, and

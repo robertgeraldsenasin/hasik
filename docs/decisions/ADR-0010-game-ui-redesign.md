@@ -46,8 +46,9 @@ Option 3.
 ## Consequences
 
 - Saved settings, saved games and records keep their format; nothing in `localStorage` changes.
-- The app's own code roughly doubles. Gzipped source went from about 22 KB to about 42 KB, comments
-  included; the production bundle size is reported by `vite build` in CI.
+- The page costs more to download: the CI build of this change is 28.4 KB of gzipped JavaScript
+  (75 KB minified) plus 5.1 KB of CSS, up from about 16 KB (ADR-0009). Still no framework and no
+  images, fonts or audio files.
 - `board/renderer.ts` is gone. Its unit tests were on `layout.ts`, which keeps its API (one optional
   argument added).
 - The end-to-end tests change where the UI changed: the opponent and side are chosen in the picker, and

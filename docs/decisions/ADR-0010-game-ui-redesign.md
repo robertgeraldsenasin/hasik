@@ -40,7 +40,7 @@ Option 3, drawn in 2.5D: a true perspective camera over a flat canvas.
   portrait phones so the far end doesn't shrink too much. Because it only tilts about that axis, a line
   across the board stays horizontal on screen, so the scene lays the wood texture onto the tilted board
   in 2-pixel horizontal strips with ordinary `drawImage`. The board gets thickness, a shadow on a woven
-  mat that fades into the page, shell heaps that grow in the stores, a hand that floats above the board,
+  banig with a woven border, on a bamboo floor that falls away into the dark page, shell heaps that grow in the stores, a hand that floats above the board,
   and shells that arc through the air with a shadow under them. A new game opens with the camera swinging
   down from overhead. Pure maths, unit-tested.
 - **A flat view.** `V` or the view button moves the camera straight overhead (pitch 90°), for anyone who

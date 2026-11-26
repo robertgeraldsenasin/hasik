@@ -1,13 +1,11 @@
 /*
- * Hasik's look: a sungkaan (carved boat-shaped board) set on a banig (woven
- * pandan mat) by lamplight. Colour carries meaning: saffron is you, banig rose is
+ * Hasik's look: a sungkaan (carved boat-shaped board) on a banig, on a bamboo
+ * floor, at night, lit by one oil lamp. The page is the dark room; the canvas is
+ * the pool of lamplight. Colour carries meaning: saffron is you, inabel indigo is
  * the bot, shell cream is neutral. The board is the hero; the chrome stays quiet.
  */
 :root {
-  --mat: #3b2814;
-  --mat-light: #4d3519;
-  --band-rose: #8e2f4c;
-  --band-saffron: #b8862a;
+  --night: #1d140d;
   --surface: rgba(30, 19, 11, 0.86);
   --surface-2: rgba(255, 238, 214, 0.06);
   --text: #f7ead3;
@@ -15,8 +13,8 @@
   --line: rgba(247, 234, 211, 0.15);
   --you: #f6b93b;
   --you-ink: #2a1606;
-  --bot: #ef7d9b;
-  --bot-ink: #2b0b14;
+  --bot: #8fa8ff;
+  --bot-ink: #101a3d;
   --wood: #8a4524;
   --wood-hi: #b0622f;
   --wood-lo: #4a1f0c;
@@ -42,7 +40,7 @@
   display: none !important;
 }
 html {
-  background: var(--mat);
+  background: var(--night);
 }
 body {
   margin: 0;
@@ -50,19 +48,9 @@ body {
   display: flex;
   flex-direction: column;
   color: var(--text);
-  background-color: var(--mat);
-  background-image:
-    radial-gradient(ellipse 70% 55% at 50% 22%, rgba(255, 186, 105, 0.17), transparent 70%),
-    radial-gradient(ellipse 120% 80% at 50% 120%, rgba(10, 5, 2, 0.75), transparent 70%),
-    repeating-linear-gradient(
-      0deg,
-      transparent 0 260px,
-      rgba(142, 47, 76, 0.11) 260px 278px,
-      rgba(184, 134, 42, 0.1) 278px 286px,
-      transparent 286px 540px
-    ),
-    repeating-linear-gradient(45deg, rgba(255, 228, 176, 0.05) 0 7px, transparent 7px 14px),
-    repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.16) 0 7px, transparent 7px 14px);
+  background-color: var(--night);
+  /* Film grain (generated in main.ts) keeps the dark from banding. */
+  background-image: var(--grain, none);
 }
 a {
   color: var(--link);
@@ -232,6 +220,8 @@ kbd {
   align-items: start;
 }
 .arena {
+  position: relative;
+  isolation: isolate;
   display: grid;
   gap: 10px;
   min-width: 0;
@@ -240,6 +230,20 @@ kbd {
   justify-self: center;
 }
 
+/* The lamplight spilling past the board onto the floor of the dark room. */
+.arena::before {
+  content: '';
+  position: absolute;
+  inset: -40px -15% 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 55% 42% at 50% 34%,
+    rgba(255, 176, 96, 0.11),
+    rgba(255, 176, 96, 0.035) 60%,
+    transparent 100%
+  );
+}
 .seat {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto auto;
@@ -254,8 +258,8 @@ kbd {
   height: 46px;
   border-radius: 50%;
   color: var(--bot);
-  background: rgba(239, 125, 155, 0.1);
-  border: 1.5px solid rgba(239, 125, 155, 0.35);
+  background: rgba(143, 168, 255, 0.1);
+  border: 1.5px solid rgba(143, 168, 255, 0.35);
   transition: box-shadow 0.25s;
 }
 .emblem.you {
@@ -264,7 +268,7 @@ kbd {
   border-color: rgba(246, 185, 59, 0.35);
 }
 .seat.turn .emblem {
-  box-shadow: 0 0 0 4px rgba(239, 125, 155, 0.22);
+  box-shadow: 0 0 0 4px rgba(143, 168, 255, 0.22);
 }
 .seat-near.turn .emblem {
   box-shadow: 0 0 0 4px rgba(246, 185, 59, 0.25);
@@ -920,7 +924,7 @@ kbd {
 }
 .opp:has(input:checked) {
   border-color: var(--bot);
-  background: rgba(239, 125, 155, 0.09);
+  background: rgba(143, 168, 255, 0.09);
 }
 .opp-emblem {
   grid-row: 1 / 3;
@@ -930,7 +934,7 @@ kbd {
   height: 46px;
   border-radius: 50%;
   color: var(--bot);
-  border: 1.5px solid rgba(239, 125, 155, 0.35);
+  border: 1.5px solid rgba(143, 168, 255, 0.35);
 }
 .opp-text strong {
   font-family: var(--font-display);

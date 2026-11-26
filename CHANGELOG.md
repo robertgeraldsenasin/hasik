@@ -12,8 +12,11 @@ Play experience and robustness in the web app, then a full redesign of the play 
 
 ### Changed
 
-- New look: a carved, boat-shaped sungkaan on a banig mat, with saffron for you and rose for
-  the bot everywhere (seats, scores, rings, effects). Dark theme only.
+- New look: a carved, boat-shaped sungkaan on a bordered banig, on a bamboo floor, in a dark
+  room lit by one oil lamp. Saffron is you and inabel indigo is the bot everywhere (seats,
+  scores, rings, effects). Under simulated red-green colour blindness, indigo and saffron sit
+  about twice as far apart as the earlier pink did.
+  Dark theme only.
 - The board is 2.5D: seen through a tilted camera, it has thickness and a shadow on a woven
   mat lit by a flickering lamp, store heaps grow as shells are banked, the hand floats over the
   board and shells arc through the air with shadows. Each game opens with the camera swinging

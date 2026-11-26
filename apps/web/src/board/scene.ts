@@ -1,7 +1,7 @@
 /**
  * The animated board, in 2.5D. Canvas 2D, no libraries, all art drawn in code.
  *
- * The board is a carved plank lying on a woven mat by lamplight, seen through a
+ * The board is a carved plank on a banig, on a bamboo floor, by lamplight, seen through a
  * tilted camera (camera.ts). Everything is placed in board space (the flat layout
  * plus a height above the wood) and projected each frame, so shells pile up in
  * their pits, rise into a hand that floats over the board, and arc through the
@@ -185,9 +185,12 @@ export class BoardScene {
 
   private texture: HTMLCanvasElement | null = null;
   private textureScale = 1;
-  private mat: HTMLCanvasElement | null = null;
-  private matScale = 0.5;
-  private matRect = { x0: 0, y0: 0, x1: 1, y1: 1 };
+  private floor: HTMLCanvasElement | null = null;
+  private floorScale = 0.5;
+  private floorRect = { x0: 0, y0: 0, x1: 1, y1: 1 };
+  private banig: HTMLCanvasElement | null = null;
+  private banigScale = 1;
+  private banigRect = { x0: 0, y0: 0, x1: 1, y1: 1 };
   private base: HTMLCanvasElement | null = null;
   private hull: Array<{ x: number; y: number }> = [];
 
@@ -253,9 +256,9 @@ export class BoardScene {
         : { orientation, maxHeight: Math.round(maxHeight * (portrait ? 1.05 : 1)) },
     );
     this.orientation = orientation;
-    // Leave a strip of mat around the board, and some air above it for flying shells.
+    // Leave a strip of floor around the board, and some air above it for flying shells.
     const headroom = Math.min(this.layout.width, this.layout.height) * 0.14;
-    const margin = portrait ? 8 : Math.max(12, width * 0.028);
+    const margin = portrait ? 12 : Math.max(14, width * 0.03);
     this.fitBase =
       maxHeight === undefined
         ? { width, headroom, margin }
@@ -269,7 +272,8 @@ export class BoardScene {
     this.finalProj = makeProjection(this.layout, target, this.fitBase);
     this.sizeCanvas();
     this.paintTexture();
-    this.paintMat();
+    this.paintFloor();
+    this.paintBanig();
     if (sweep && !this.reducedMotion) {
       const from = { pitch: 86, distance: target.distance * 1.25 };
       this.camAnim = { from, to: target, t0: performance.now(), dur: SWEEP_MS };
@@ -1404,57 +1408,141 @@ export class BoardScene {
     this.texture = c;
   }
 
-  /** The woven banig the board sits on, as a texture for the table plane. */
-  private paintMat() {
+  /**
+   * The floor: split-bamboo slats, the way a bahay kubo floor is laid. The slats run
+   * away from the player, so they converge with the camera's perspective.
+   */
+  private paintFloor() {
     const { width: w, height: h } = this.layout;
     const portrait = this.layout.orientation === 'portrait';
     const r = portrait
       ? { x0: -0.5 * w, y0: -0.8 * h, x1: 1.5 * w, y1: 1.5 * h }
       : { x0: -0.6 * w, y0: -2.4 * h, x1: 1.6 * w, y1: 2 * h };
-    this.matRect = r;
-    const ms = Math.min(1, 1.2 * this.dpr * 0.5);
-    this.matScale = ms;
+    this.floorRect = r;
+    const fs = Math.min(1, 0.6 * this.dpr);
+    this.floorScale = fs;
+    const W = r.x1 - r.x0;
+    const H = r.y1 - r.y0;
     const c = document.createElement('canvas');
-    c.width = Math.ceil((r.x1 - r.x0) * ms);
-    c.height = Math.ceil((r.y1 - r.y0) * ms);
+    c.width = Math.ceil(W * fs);
+    c.height = Math.ceil(H * fs);
     const x = c.getContext('2d')!;
-    x.scale(ms, ms);
-    x.fillStyle = '#4e3519';
-    x.fillRect(0, 0, r.x1 - r.x0, r.y1 - r.y0);
-    // Over-under weave: alternating diagonal strips of light and dark pandan.
-    const cell = 16;
-    const cols = Math.ceil((r.x1 - r.x0) / cell) + 2;
-    const rows = Math.ceil((r.y1 - r.y0) / cell) + 2;
-    for (let j = 0; j < rows; j++)
-      for (let i = 0; i < cols; i++) {
-        const cx = i * cell;
-        const cy = j * cell;
+    x.scale(fs, fs);
+    let seed = 11;
+    const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    x.fillStyle = '#140c06';
+    x.fillRect(0, 0, W, H);
+    const tones = ['#9c7742', '#8e6b39', '#a6814b', '#86633a', '#977242'];
+    const slat = Math.max(18, Math.min(w, h) * 0.07);
+    // Line the slats up with the board's centre so the floor looks laid around it.
+    const start = (((-r.x0 + w / 2) % slat) - slat) | 0;
+    for (let sx = start; sx < W; sx += slat * (0.92 + rnd() * 0.16)) {
+      const tone = tones[Math.floor(rnd() * tones.length)]!;
+      const sw = slat - 2.5;
+      // Split bamboo is rounded across its width: dark edges, a lit crown.
+      const g = x.createLinearGradient(sx, 0, sx + sw, 0);
+      g.addColorStop(0, shade(tone, -0.45));
+      g.addColorStop(0.3, shade(tone, -0.05));
+      g.addColorStop(0.55, shade(tone, 0.12));
+      g.addColorStop(1, shade(tone, -0.5));
+      x.fillStyle = g;
+      x.fillRect(sx, 0, sw, H);
+      x.strokeStyle = 'rgba(40,24,8,0.18)';
+      x.lineWidth = 0.7;
+      for (let k = 0; k < 3; k++) {
+        const fx = sx + sw * (0.2 + rnd() * 0.6);
         x.beginPath();
-        if ((i + j) % 2 === 0) {
-          x.moveTo(cx, cy);
-          x.lineTo(cx + cell, cy + cell * 0.18);
-          x.lineTo(cx + cell, cy + cell);
-          x.lineTo(cx, cy + cell * 0.82);
-          x.fillStyle = 'rgba(122,88,46,0.55)';
-        } else {
-          x.moveTo(cx, cy + cell * 0.18);
-          x.lineTo(cx + cell * 0.82, cy);
-          x.lineTo(cx + cell, cy + cell * 0.82);
-          x.lineTo(cx + cell * 0.18, cy + cell);
-          x.fillStyle = 'rgba(40,24,10,0.35)';
-        }
-        x.closePath();
-        x.fill();
+        x.moveTo(fx, 0);
+        x.lineTo(fx + (rnd() - 0.5) * 3, H);
+        x.stroke();
       }
-    // Dyed bands across the mat.
-    const bandEvery = 300;
-    for (let y = 120; y < r.y1 - r.y0; y += bandEvery) {
-      x.fillStyle = 'rgba(142,47,76,0.55)';
-      x.fillRect(0, y, r.x1 - r.x0, 20);
-      x.fillStyle = 'rgba(184,134,42,0.5)';
-      x.fillRect(0, y + 24, r.x1 - r.x0, 8);
+      // Nodes: a raised ring every so often along the cane.
+      for (let y = rnd() * 140; y < H; y += 120 + rnd() * 110) {
+        x.fillStyle = 'rgba(35,20,6,0.55)';
+        x.fillRect(sx, y, sw, 2.4);
+        x.fillStyle = 'rgba(255,225,170,0.22)';
+        x.fillRect(sx + 1, y - 1.4, sw - 2, 1.2);
+      }
     }
-    this.mat = c;
+    this.floor = c;
+  }
+
+  /**
+   * The banig the board sits on: a mat of pandan strips woven on the diagonal, with
+   * dyed bands around its border. It is a real object with edges, not wallpaper.
+   */
+  private paintBanig() {
+    const { width: w, height: h } = this.layout;
+    const portrait = this.layout.orientation === 'portrait';
+    const r = portrait
+      ? { x0: -0.022 * w, y0: -0.05 * h, x1: 1.022 * w, y1: 1.025 * h }
+      : { x0: -0.016 * w, y0: -0.17 * h, x1: 1.016 * w, y1: 1.03 * h };
+    this.banigRect = r;
+    const bs = Math.min(2, Math.max(0.8, this.textureScale * 0.8));
+    this.banigScale = bs;
+    const W = r.x1 - r.x0;
+    const H = r.y1 - r.y0;
+    const c = document.createElement('canvas');
+    c.width = Math.ceil(W * bs);
+    c.height = Math.ceil(H * bs);
+    const x = c.getContext('2d')!;
+    x.scale(bs, bs);
+    x.fillStyle = '#7d6138';
+    x.fillRect(0, 0, W, H);
+    // Diagonal over-under weave. Each strip has its own shade, as dried pandan does.
+    const cell = Math.max(7, Math.min(w, h) * 0.026);
+    const strip = (n: number) => {
+      const v = Math.sin(n * 12.9898) * 43758.5453;
+      return v - Math.floor(v);
+    };
+    x.save();
+    x.translate(W / 2, H / 2);
+    x.rotate(Math.PI / 4);
+    const R = Math.hypot(W, H) / 2 + cell;
+    for (let a = Math.floor(-R / cell); a * cell < R; a++)
+      for (let b = Math.floor(-R / cell); b * cell < R; b++) {
+        const over = ((a + b) & 1) === 0;
+        const t = strip(over ? a : b + 1000);
+        const base = over ? 178 + t * 26 : 150 + t * 24;
+        x.fillStyle = `rgb(${base | 0},${(base * 0.8) | 0},${(base * 0.52) | 0})`;
+        x.fillRect(a * cell + 0.35, b * cell + 0.35, cell - 0.7, cell - 0.7);
+        x.fillStyle = 'rgba(50,28,8,0.22)';
+        if (over) x.fillRect(a * cell, b * cell + cell - 1.3, cell, 1.3);
+        else x.fillRect(a * cell + cell - 1.3, b * cell, 1.3, cell);
+      }
+    x.restore();
+    // Border: a dark selvedge, a green band with saffron diamonds, a thin saffron line.
+    const band = cell * 1.6;
+    x.strokeStyle = 'rgba(45,24,6,0.7)';
+    x.lineWidth = 3;
+    x.strokeRect(1.5, 1.5, W - 3, H - 3);
+    x.fillStyle = 'rgba(38,92,66,0.88)';
+    x.fillRect(cell, cell, W - 2 * cell, band);
+    x.fillRect(cell, H - cell - band, W - 2 * cell, band);
+    x.fillRect(cell, cell, band, H - 2 * cell);
+    x.fillRect(W - cell - band, cell, band, H - 2 * cell);
+    x.fillStyle = 'rgba(214,160,58,0.9)';
+    const diamond = (cx: number, cy: number, s: number) => {
+      x.beginPath();
+      x.moveTo(cx, cy - s);
+      x.lineTo(cx + s, cy);
+      x.lineTo(cx, cy + s);
+      x.lineTo(cx - s, cy);
+      x.closePath();
+      x.fill();
+    };
+    const ds = band * 0.32;
+    for (let px = cell + band; px < W - cell - band; px += band * 1.4) {
+      diamond(px, cell + band / 2, ds);
+      diamond(px, H - cell - band / 2, ds);
+    }
+    for (let py = cell + band * 1.5; py < H - cell - band; py += band * 1.4) {
+      diamond(cell + band / 2, py, ds);
+      diamond(W - cell - band / 2, py, ds);
+    }
+    x.fillRect(cell + band + 2, cell + band + 2, W - 2 * (cell + band + 2), 1.6);
+    x.fillRect(cell + band + 2, H - cell - band - 3.6, W - 2 * (cell + band + 2), 1.6);
+    this.banig = c;
   }
 
   /** Lay a flat texture covering board-space rect r onto the table plane at height z. */
@@ -1512,43 +1600,64 @@ export class BoardScene {
     const depth = BOARD_DEPTH * Math.min(L.width, L.height);
     const centre = this.P(L.width / 2, L.height / 2, 0);
 
-    // The mat, fading out at the edges into the page.
-    if (this.mat) {
-      this.drawPlane(x, this.mat, this.matScale, this.matRect, -depth);
-      // An oval mask that reaches zero exactly at the canvas edges, so the mat melts
-      // into the page's own mat with no visible rectangle.
+    // The floor, lit by the lamp and falling away into the dark page around it.
+    const R = Math.max(width, height) * 0.62;
+    if (this.floor) {
+      this.drawPlane(x, this.floor, this.floorScale, this.floorRect, -depth);
       x.globalCompositeOperation = 'destination-in';
       x.save();
       x.translate(width / 2, height / 2);
       x.scale(width / 2, height / 2);
       const fade = x.createRadialGradient(0, 0, 0, 0, 0, 1);
       fade.addColorStop(0, 'rgba(0,0,0,1)');
-      fade.addColorStop(0.62, 'rgba(0,0,0,0.92)');
+      fade.addColorStop(0.7, 'rgba(0,0,0,0.9)');
       fade.addColorStop(1, 'rgba(0,0,0,0)');
       x.fillStyle = fade;
       x.fillRect(-1, -1, 2, 2);
       x.restore();
       x.globalCompositeOperation = 'source-over';
-      const R = Math.max(width, height) * 0.62;
-      // Night: the lamp lights the middle of the mat.
-      const lamp = x.createRadialGradient(
-        centre.x,
-        centre.y - height * 0.15,
-        0,
-        centre.x,
-        centre.y,
-        R,
-      );
-      lamp.addColorStop(0, 'rgba(255,190,110,0.14)');
-      lamp.addColorStop(0.6, 'rgba(30,14,4,0.15)');
-      lamp.addColorStop(1, 'rgba(20,10,3,0.45)');
-      x.globalCompositeOperation = 'source-atop';
-      x.fillStyle = lamp;
-      x.fillRect(0, 0, width, height);
-      x.globalCompositeOperation = 'source-over';
     }
 
-    // The board's shadow on the mat.
+    // The banig, with a soft shadow where it lies on the slats.
+    if (this.banig) {
+      const b = this.banigRect;
+      const corners = [
+        this.P(b.x0, b.y0, -depth),
+        this.P(b.x1, b.y0, -depth),
+        this.P(b.x1, b.y1, -depth),
+        this.P(b.x0, b.y1, -depth),
+      ];
+      const outline = new Path2D();
+      corners.forEach((p, i) => (i === 0 ? outline.moveTo(p.x, p.y) : outline.lineTo(p.x, p.y)));
+      outline.closePath();
+      x.save();
+      x.shadowColor = 'rgba(0,0,0,0.55)';
+      x.shadowBlur = 10;
+      x.shadowOffsetY = 3;
+      x.fillStyle = '#3a2810';
+      x.fill(outline);
+      x.restore();
+      this.drawPlane(x, this.banig, this.banigScale, b, -depth);
+    }
+
+    // Night: one warm pool of light from the lamp; everything else drops into shadow.
+    const lamp = x.createRadialGradient(
+      centre.x,
+      centre.y - height * 0.18,
+      0,
+      centre.x,
+      centre.y,
+      R,
+    );
+    lamp.addColorStop(0, 'rgba(255,186,104,0.16)');
+    lamp.addColorStop(0.5, 'rgba(40,20,6,0.08)');
+    lamp.addColorStop(1, 'rgba(14,8,3,0.5)');
+    x.globalCompositeOperation = 'source-atop';
+    x.fillStyle = lamp;
+    x.fillRect(0, 0, width, height);
+    x.globalCompositeOperation = 'source-over';
+
+    // The board's shadow on the banig.
     x.save();
     x.shadowColor = 'rgba(0,0,0,0.6)';
     x.shadowBlur = 24;
@@ -1656,12 +1765,22 @@ function readPalette(): Palette {
     pit: v('--pit', '#3a1909'),
     ink: v('--board-ink', '#fbeedb'),
     you: v('--you', '#f6b93b'),
-    bot: v('--bot', '#ef7d9b'),
+    bot: v('--bot', '#8fa8ff'),
     shell: v('--shell', '#efe2c6'),
     shellShade: v('--shell-shade', '#cdb48a'),
     display: v('--font-display', 'Georgia, serif'),
     ui: v('--font-ui', 'system-ui, sans-serif'),
   };
+}
+
+/** Lighten (amount > 0) or darken (amount < 0) a "#rrggbb" colour. */
+function shade(hex: string, amount: number): string {
+  const n = parseInt(hex.slice(1), 16);
+  const f = (v: number) =>
+    Math.round(amount >= 0 ? v + (255 - v) * amount : v * (1 + amount))
+      .toString(16)
+      .padStart(2, '0');
+  return `#${f((n >> 16) & 255)}${f((n >> 8) & 255)}${f(n & 255)}`;
 }
 
 /** "#rrggbb" or "rgb(...)" plus an alpha. */

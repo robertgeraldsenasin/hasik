@@ -4,6 +4,30 @@ import { mountLeaderboard } from './views/leaderboard';
 import { mountPlay } from './views/play';
 
 const root = document.querySelector<HTMLElement>('#app')!;
+
+/** A small tile of seeded noise for the page background, so the dark doesn't band. */
+function paintGrain() {
+  try {
+    const size = 140;
+    const c = document.createElement('canvas');
+    c.width = c.height = size;
+    const x = c.getContext('2d');
+    if (!x) return;
+    const img = x.createImageData(size, size);
+    let seed = 9;
+    for (let i = 0; i < img.data.length; i += 4) {
+      seed = (seed * 16807) % 2147483647;
+      const v = seed & 255;
+      img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+      img.data[i + 3] = 9;
+    }
+    x.putImageData(img, 0, 0);
+    document.documentElement.style.setProperty('--grain', `url(${c.toDataURL()})`);
+  } catch {
+    /* a plain background is fine */
+  }
+}
+paintGrain();
 let cleanup: (() => void) | void;
 
 /** A visible, dismissible notice instead of a silently broken page. */

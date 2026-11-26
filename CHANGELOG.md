@@ -6,9 +6,39 @@ All notable changes are recorded here. The format follows
 
 ## [Unreleased]
 
-Play experience and robustness in the web app.
+Play experience and robustness in the web app, then a full redesign of the play page
+([ADR-0010](docs/decisions/ADR-0010-game-ui-redesign.md), research in
+[docs/design/ui-research.md](docs/design/ui-research.md)).
+
+### Changed
+
+- New look: a carved, boat-shaped sungkaan on a banig mat, with saffron for you and rose for
+  the bot everywhere (seats, scores, rings, effects). Dark theme only.
+- The board is animated: shells are scooped into a hand that glides from pit to pit and drops
+  one at a time, pits bounce and knock as shells land, relays are called out (_Tuloy_),
+  captured shells fly to the store with a burst sized to the capture (_Kain +9_), and an
+  extra turn gets a banner (_Isa pa!_).
+- Moves get a time budget instead of a fixed delay per shell: a 48-shell move now takes about
+  3.6 s instead of 7.4 s, a 137-shell move about 5.2 s instead of 20.6 s. Tap the board or
+  press Space to fast-forward.
+- The move preview is drawn on the board: a bead on every pit the move touches, relay marks,
+  the landing ring, an outcome chip and the store gain. On touch screens the first tap aims
+  and the second sows.
+- The house buttons now sit over the pits instead of in a row under the board.
+- Opponents are chosen in a picker with emblems and difficulty marks; the seats show each
+  player's banked shells, and a bar shows the split of all 98 with the 50-shell line.
+- The bot's row shimmers while it searches and the house it picks pulses before it plays.
+- On phones held upright the board turns a quarter turn so houses are big enough to tap.
+- The rules card has one sentence and one drawing per rule. Speed is a single button with
+  four steps; reduced motion turns off shake, particles and ambient glow.
+- Sound: knocks for each shell, a climbing clack as a store fills, a rattle on each scoop.
 
 ### Added
+
+- An interactive tutorial (`#/learn`, or "Teach me" on a first visit): five one-move lessons
+  on real positions, each checked against the engine in a unit test, replayable at any time.
+- `pnpm move-lengths`, which measures move and game lengths from seeded self-play and writes
+  `results/move-lengths.json`.
 
 - Move preview: hovering over or focusing a house marks where its last shell lands and
   says what the move does (extra turn, relays, captures, store gain).

@@ -5,40 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Play Sungka, the Filipino mancala, against an AI that searches like a chess engine."
+      content="Play Sungka, the Filipino shell game, against an AI that searches like a chess engine. Learn it in five moves."
     />
-    <meta name="theme-color" content="#6e3b1a" />
+    <meta name="theme-color" content="#2a1c10" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>Hasik · Sungka vs an engine</title>
+    <title>Hasik: play Sungka, the Filipino shell game</title>
   </head>
   <body>
     <a class="skip" href="#app">Skip to content</a>
     <header class="site-header">
-      <a class="brand" href="#/play" aria-label="Hasik home">
+      <a class="brand" href="#/play" aria-label="Hasik, play Sungka">
         <svg viewBox="0 0 32 32" aria-hidden="true">
           <ellipse
             cx="16"
             cy="16"
-            rx="11"
-            ry="7.5"
-            fill="#f3e9d2"
-            stroke="#6e3b1a"
-            stroke-width="2"
+            rx="12"
+            ry="8.5"
+            fill="#efe2c6"
+            stroke="#f6b93b"
+            stroke-width="1.6"
           />
-          <path d="M7 16 Q16 19 25 16" stroke="#6e3b1a" stroke-width="2" fill="none" />
+          <path
+            d="M6.5 16.6 Q16 20.5 25.5 16.6"
+            stroke="#8a4524"
+            stroke-width="1.8"
+            fill="none"
+            stroke-linecap="round"
+          />
+          <ellipse cx="12" cy="12.6" rx="3.2" ry="1.4" fill="#fffaf0" opacity="0.8" />
         </svg>
-        <span>Hasik</span>
+        <b>Hasik</b>
+        <i lang="tl">to sow</i>
       </a>
-      <span class="tagline">Sungka against an engine that thinks like a chess engine</span>
+      <p class="tagline">
+        Sungka, the Filipino shell game, against an engine that searches like a chess program.
+      </p>
       <nav aria-label="Main">
         <a href="#/play" data-page="play">Play</a>
+        <a href="#/learn" data-page="learn">Learn</a>
         <a href="#/leaderboard" data-page="leaderboard">Leaderboard</a>
         <a href="#/about" data-page="about">How it works</a>
       </nav>
     </header>
     <main id="app" tabindex="-1"></main>
     <footer class="site-footer">
-      <span>Rules follow the variant in the project's ADR-0001; regional variants differ.</span>
+      <span>Rules follow the variant in the project's ADR-0001. Regional variants differ.</span>
       <a href="https://github.com/robertgeraldsenasin/hasik">Source on GitHub</a>
     </footer>
     <script type="module" src="/src/main.ts"></script>

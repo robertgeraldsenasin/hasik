@@ -17,6 +17,10 @@ export interface MovePreview {
   /** Shells the mover's store gains, captures included. */
   readonly storeGain: number;
   readonly endsGame: boolean;
+  /** Every slot a shell is dropped into, in order (relays included). */
+  readonly path: readonly number[];
+  /** Houses where the sowing scoops up again and carries on. */
+  readonly relaySlots: readonly number[];
   /** One line for the UI, written from the mover's point of view. */
   readonly text: string;
 }
@@ -26,9 +30,16 @@ export function previewMove(state: GameState, house: number): MovePreview {
   const store = storeOf(state.toMove);
   let landing = house;
   let relays = 0;
+  const path: number[] = [];
+  const relaySlots: number[] = [];
   for (const e of r.events) {
-    if (e.kind === 'drop') landing = e.slot;
-    else if (e.kind === 'pickup' && e.relay) relays++;
+    if (e.kind === 'drop') {
+      landing = e.slot;
+      path.push(e.slot);
+    } else if (e.kind === 'pickup' && e.relay) {
+      relays++;
+      relaySlots.push(e.slot);
+    }
   }
   const storeGain = (r.state.slots[store] as number) - (state.slots[store] as number);
   const endsGame = r.state.over;
@@ -49,6 +60,8 @@ export function previewMove(state: GameState, house: number): MovePreview {
     drops: r.sowSteps,
     storeGain,
     endsGame,
+    path,
+    relaySlots,
     text: bits.join(' · '),
   };
 }

@@ -4,8 +4,10 @@ export function mountAbout(root: HTMLElement): void {
   root.innerHTML = `
   <section class="prose">
     <h1>How Hasik works</h1>
-    <p><strong>Hasik</strong> is Tagalog for "to sow", the one move in Sungka, the Filipino mancala.
-    Two players face a board of 7 small houses each, with 7 shells per house and one store at each end.</p>
+    <p><strong>Hasik</strong> is Tagalog for "to sow", the one move in Sungka, the Filipino mancala. The board
+    (<i lang="tl">sungkaan</i>) is a carved plank, often boat-shaped, with seven small houses (<i lang="tl">bahay</i>)
+    for each player and a big store (<i lang="tl">ulo</i>, "head") at each end. Every house starts with seven
+    cowrie shells (<i lang="tl">sigay</i>).</p>
 
     <h2>The rules in one minute</h2>
     <ol>
@@ -17,7 +19,7 @@ export function mountAbout(root: HTMLElement): void {
       <li>When the player to move has no shells left, the game ends; shells still in a row go to that row's owner.
       Most shells wins.</li>
     </ol>
-    <p class="muted">Regional variants differ; every rule above is a flag in the engine (see ADR-0001).</p>
+    <p class="muted">Regional variants differ. Every rule above is a flag in the engine (see ADR-0001).</p>
 
     <h2>The engine</h2>
     <ul>
@@ -31,19 +33,25 @@ export function mountAbout(root: HTMLElement): void {
     </ul>
     <p>Code, design records and the build guide: <a href="${REPO}">${REPO.replace('https://', '')}</a>.</p>
 
-    <h2>Helpers while you play</h2>
+    <h2>Playing it on a screen</h2>
+    <p>Sungka is easy to learn and hard to count. A single move can relay around the board three or four times,
+    so the play page is built to show you what a move will do before you commit and what it did afterwards.</p>
     <ul>
-      <li><strong>Move preview:</strong> hover over or focus a house and the board marks where its last shell
-      lands, with what the move will do (extra turn, capture, relays).</li>
-      <li><strong>Hint mode:</strong> the engine searches every legal move with a fixed node budget and puts its
-      score on each house. Extra turns are handled the same way as in the search: if you keep the turn, the
-      score is not negated.</li>
-      <li><strong>Undo</strong>, a saved game that survives a reload, and a win record per opponent (games that
-      use hints or undo aren't counted).</li>
+      <li><strong>Learn in five moves.</strong> The tutorial (<a href="#/learn">Learn</a>) puts you on five real
+      positions, one idea each: sowing, the extra turn, relays, captures and the end of the game.</li>
+      <li><strong>Look before you sow.</strong> Point at a house, or tap it once on a phone, and the board marks
+      every pit the move will touch, where it relays, where the last shell lands and what you bank. The preview
+      runs the real engine on a copy of the position, so it is never wrong.</li>
+      <li><strong>Moves you can follow.</strong> Shells are scooped into a hand and dropped one at a time.
+      Long relays speed up so no move drags, and a tap on the board or the Space bar fast-forwards.</li>
+      <li><strong>Hints, undo and saved games.</strong> The engine can score every move for you (gold marks the
+      best). Games that use a hint or undo still play out but don't count in your record.</li>
+      <li><strong>Phones.</strong> Held upright, the board turns a quarter turn so the houses are big enough to
+      tap with a thumb.</li>
     </ul>
 
     <h2>Keyboard</h2>
-    <p><kbd>1</kbd>–<kbd>7</kbd> play your houses from left to right · <kbd>H</kbd> hint · <kbd>U</kbd> undo ·
-    <kbd>N</kbd> new game · <kbd>M</kbd> sound on or off · <kbd>?</kbd> how to play.</p>
+    <p><kbd>1</kbd>–<kbd>7</kbd> play your houses in sowing order, <kbd>H</kbd> hint, <kbd>U</kbd> undo,
+    <kbd>N</kbd> new game, <kbd>M</kbd> sound on or off, <kbd>Space</kbd> skip ahead, <kbd>?</kbd> rules.</p>
   </section>`;
 }

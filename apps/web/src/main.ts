@@ -42,7 +42,7 @@ function route() {
   try {
     if (page === 'leaderboard') void mountLeaderboard(root);
     else if (page === 'about') mountAbout(root);
-    else cleanup = mountPlay(root);
+    else cleanup = mountPlay(root, { tutorial: page === 'learn' });
   } catch (e) {
     root.innerHTML = `<section class="prose"><h1>Hasik couldn't start</h1>
       <p>Your browser is missing something the game needs (<span id="start-error"></span>).

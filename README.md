@@ -17,8 +17,8 @@
 - **AI:** negamax alpha-beta with iterative deepening, a two-tier transposition table, move ordering (TT move, extra turns, captures, killers, history) and an extra-turn extension; plus Monte Carlo Tree Search (UCT) as a second, independent AI.
 - **Ratings:** Glicko-2 leaderboard from round-robin tournaments over a committed opening book.
 - **CI strength gate:** every change to the engine plays the base branch in an SPRT match (Sequential Probability Ratio Test) and cannot merge unless it is proven not to be weaker. Stockfish's testing framework decides what ships the same way.
-- **Web app:** Canvas board with drop-by-drop sowing animation, bots in a Web Worker (the page never freezes), five difficulty levels plus MCTS, an engine-insight panel showing depth, nodes/s, evaluation and the expected line. About 16 KB gzipped.
-- **Helpers for players:** a move preview that marks where the last shell lands, a hint mode that searches every legal move and puts its score on the board, undo, a game that survives a reload, a win record per opponent, sound effects, and a how-to-play guide. Every view passes an axe accessibility scan in light and dark mode.
+- **Web app:** a carved board on a banig mat, drawn in code. Shells are scooped into a hand and dropped one at a time, pits bounce, captures fly to the store, and long relays speed up so no move drags (tap to skip). Bots run in a Web Worker, so the page never freezes; the bot's row shimmers while it searches and the house it picks pulses before it plays. Five levels plus MCTS, and a panel showing what the bot sees. On a phone held upright, the board turns a quarter turn so the houses are big enough to tap.
+- **Learning and helpers:** a five-move tutorial on real positions ([play it](https://robertgeraldsenasin.github.io/hasik/#/learn)), a preview that marks every pit a move will touch and what it wins before you commit, hints that score every legal move, undo, a game that survives a reload, a record per opponent and synthesized sound. Research and measurements behind the design: [docs/design/ui-research.md](docs/design/ui-research.md).
 
 ## Results
 
@@ -133,13 +133,13 @@ flowchart LR
 | Golden | Perft counts at depths 0-6 lock the move generator |
 | Search | Alpha-beta = classic minimax; pruning, ordering and the TT never change the root value |
 | Statistics | Glickman's Glicko-2 example; hand-computed SPRT values |
-| Web | The move preview agrees with the engine on every legal move of many positions; a saved game is restored only if every move replays legally; hint mode scores a game-ending move exactly |
-| End-to-end | Playwright, on the production build: three moves against level 3; preview, hint, undo and resume after a reload; shortcuts ignore modifier keys |
+| Web | The move preview and its path agree with the engine on every legal move of many positions; every tutorial lesson does what its text says; long moves stay within their time budget; portrait and landscape layouts never overlap houses; a saved game is restored only if every move replays legally; hint mode scores a game-ending move exactly |
+| End-to-end | Playwright, on the production build: three moves against level 3; preview, hint, undo and resume after a reload; shortcuts ignore modifier keys; a new game mid-animation; the full tutorial; aim-then-sow on a phone viewport |
 | Strength | The SPRT gate on every engine pull request |
 
 ## Decisions
 
-[docs/decisions/](docs/decisions/): rule variant, hashing and TT design, name, retiring the hand-written-core constraint, the SPRT gate, hosting, monorepo tooling, the opening book.
+[docs/decisions/](docs/decisions/): rule variant, hashing and TT design, name, retiring the hand-written-core constraint, the SPRT gate, hosting, monorepo tooling, the opening book, player helpers, and the game UI redesign.
 
 ## What I'd improve
 
@@ -147,6 +147,7 @@ flowchart LR
 - A retrograde endgame tablebase (milestone 2) for perfect play with few shells left.
 - Online play with an authoritative server, replays and a live leaderboard (milestone 2).
 - A faster engine core (fewer allocations per move, or Rust/WebAssembly) and SPSA tuning of the evaluation weights.
+- Pass-and-play for two people on one phone, and a playtest of the tutorial with people who have never seen Sungka.
 
 ## Credits and AI use
 

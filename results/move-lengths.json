@@ -1,0 +1,23 @@
+{
+  "seed": 20261126,
+  "random": {
+    "games": 400,
+    "pliesMedian": 33,
+    "dropsMedian": 6,
+    "dropsP90": 37,
+    "dropsMax": 212,
+    "relayMovePct": 54,
+    "capturePct": 48,
+    "extraTurnPct": 27
+  },
+  "greedy": {
+    "games": 400,
+    "pliesMedian": 21,
+    "dropsMedian": 5,
+    "dropsP90": 48,
+    "dropsMax": 137,
+    "relayMovePct": 54,
+    "capturePct": 63,
+    "extraTurnPct": 27
+  }
+}

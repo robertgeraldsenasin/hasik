@@ -124,7 +124,8 @@ identical game forever. [ADR-0008](../decisions/ADR-0008-opening-book.md)
 ## Step 7: The web app (`apps/web`)
 
 **What:** Vite + TypeScript, no framework. `board/layout.ts` (pure geometry, unit
-tested), `board/renderer.ts` (Canvas 2D, all art drawn in code), `worker/` (the bot
+tested), `board/renderer.ts` (Canvas 2D, all art drawn in code; replaced by the animated
+`board/scene.ts` in [ADR-0010](../decisions/ADR-0010-game-ui-redesign.md)), `worker/` (the bot
 runs in a Web Worker), `views/play.ts` (the game loop), leaderboard and about pages,
 and one Playwright smoke test.
 

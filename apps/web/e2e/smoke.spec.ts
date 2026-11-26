@@ -1,11 +1,22 @@
 import { type Page, expect, test } from '@playwright/test';
 
-/** First visits open the how-to-play dialog; close it so the board can be used. */
+/** First visits open the rules card; close it so the board can be used. */
 async function dismissHelp(page: Page) {
   const start = page.getByRole('button', { name: 'Start playing' });
   await expect(start).toBeVisible();
   await start.click();
   await expect(page.locator('dialog#help')).not.toBeVisible();
+}
+
+/** Open the opponent picker, choose, and start. */
+async function startGame(page: Page, opts: { opponent?: string; botFirst?: boolean } = {}) {
+  await page.getByTestId('new-game').click();
+  await expect(page.locator('dialog#setup')).toBeVisible();
+  if (opts.opponent) await page.getByTestId(`opp-${opts.opponent}`).click();
+  if (opts.botFirst !== undefined)
+    await page.getByTestId(opts.botFirst ? 'bot-first' : 'you-first').click();
+  await page.getByTestId('start-game').click();
+  await expect(page.locator('dialog#setup')).not.toBeVisible();
 }
 
 // The smoke test from the spec: load the page, start a game against level 3,
@@ -14,8 +25,7 @@ test('play three moves against level 3', async ({ page }) => {
   await page.goto('/?anim=instant');
   await dismissHelp(page);
   await expect(page.getByRole('heading', { name: 'Moves' })).toBeVisible();
-  await page.getByTestId('opponent').selectOption('level-3');
-  await page.getByTestId('new-game').click();
+  await startGame(page, { opponent: 'level-3' });
 
   for (let i = 0; i < 3; i++) {
     await expect(page.getByTestId('status')).toContainText(/Your move|Extra turn|wins|Draw/, {
@@ -81,10 +91,10 @@ test('a new game during the bot animation never lets the old bot move again', as
   // Regression test for the 2026-11-16 race in docs/debug-log.md.
   await page.goto('/?anim=slow&level=2');
   await dismissHelp(page);
-  await page.locator('#side').selectOption('1'); // the bot moves first
+  await startGame(page, { botFirst: true });
   // The insight panel fills in when the bot's search returns, right before its move animates.
   await expect(page.locator('#insight')).toContainText('Evaluation', { timeout: 15_000 });
-  await page.getByTestId('new-game').click(); // mid-animation
+  await startGame(page); // mid-animation
   await expect(page.getByTestId('status')).toContainText(/Your move|Extra turn/, {
     timeout: 30_000,
   });
@@ -97,6 +107,54 @@ test('a new game during the bot animation never lets the old bot move again', as
   await page.reload();
   await expect(page.locator('.toast', { hasText: 'Welcome back' })).toBeAttached();
   await expect(log).toHaveCount(played);
+});
+
+test('the tutorial walks through all five lessons, then offers an opponent', async ({ page }) => {
+  await page.goto('/?anim=instant#/learn');
+  const coach = page.locator('#coach');
+  await expect(coach).toBeVisible();
+  for (const house of [1, 4, 1, 2, 7]) {
+    // Only the house the lesson asks for can be played.
+    await expect(page.locator('[data-testid^="house-"]:not([disabled])')).toHaveCount(1);
+    await page.getByTestId(`house-${house}`).click();
+    await expect(page.locator('#coach-next')).toBeVisible({ timeout: 15_000 });
+    await page.locator('#coach-next').click();
+  }
+  await expect(coach).toBeHidden();
+  await expect(page.locator('dialog#setup')).toBeVisible();
+  await expect(page).toHaveURL(/#\/play$/);
+});
+
+test('the board switches between the 2.5D table and a flat view, and remembers it', async ({
+  page,
+}) => {
+  await page.goto('/?anim=instant');
+  await dismissHelp(page);
+  const view = page.getByTestId('view');
+  await expect(view).toContainText('2.5D');
+  await view.click();
+  await expect(view).toContainText('Flat');
+  // The house buttons follow the board, so moves still work after the switch.
+  await page.getByTestId('house-1').click();
+  await expect(page.locator('[data-testid="move-log"] li')).toHaveCount(1);
+  await page.reload();
+  await expect(page.getByTestId('view')).toContainText('Flat');
+});
+
+test.describe('on a phone', () => {
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+
+  test('the board stands upright and the first tap only aims', async ({ page }) => {
+    await page.goto('/?anim=instant');
+    await page.getByRole('button', { name: 'Start playing' }).tap();
+    await expect(page.locator('.play')).toHaveClass(/portrait/);
+    const house = page.getByTestId('house-1');
+    await house.tap();
+    await expect(page.getByTestId('preview')).toContainText('Tap again to sow');
+    await expect(page.locator('[data-testid="move-log"] li')).toHaveCount(0);
+    await house.tap();
+    await expect(page.locator('[data-testid="move-log"] li')).toHaveCount(1);
+  });
 });
 
 test('leaderboard page loads', async ({ page }) => {

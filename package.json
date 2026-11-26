@@ -28,7 +28,8 @@
     "readme:tables": "tsx scripts/gen-readme-tables.ts",
     "e2e": "pnpm --filter @hasik/web test:e2e",
     "verify": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm boundaries && pnpm readme:tables --check && pnpm test",
-    "ablation": "tsx tools/bench/ablation.ts"
+    "ablation": "tsx tools/bench/ablation.ts",
+    "move-lengths": "tsx tools/bench/move-lengths.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

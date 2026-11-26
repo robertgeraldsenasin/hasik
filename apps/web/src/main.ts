@@ -4,6 +4,30 @@ import { mountLeaderboard } from './views/leaderboard';
 import { mountPlay } from './views/play';
 
 const root = document.querySelector<HTMLElement>('#app')!;
+
+/** A small tile of seeded noise for the page background, so the dark doesn't band. */
+function paintGrain() {
+  try {
+    const size = 140;
+    const c = document.createElement('canvas');
+    c.width = c.height = size;
+    const x = c.getContext('2d');
+    if (!x) return;
+    const img = x.createImageData(size, size);
+    let seed = 9;
+    for (let i = 0; i < img.data.length; i += 4) {
+      seed = (seed * 16807) % 2147483647;
+      const v = seed & 255;
+      img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+      img.data[i + 3] = 9;
+    }
+    x.putImageData(img, 0, 0);
+    document.documentElement.style.setProperty('--grain', `url(${c.toDataURL()})`);
+  } catch {
+    /* a plain background is fine */
+  }
+}
+paintGrain();
 let cleanup: (() => void) | void;
 
 /** A visible, dismissible notice instead of a silently broken page. */
@@ -25,7 +49,11 @@ function showError(message: string) {
   bar.append(text, close);
 }
 
-window.addEventListener('error', (e) => showError(e.message || 'an unexpected error'));
+window.addEventListener('error', (e) => {
+  // Browsers report this when a resize settles over two frames. It is harmless.
+  if (/ResizeObserver loop/.test(e.message ?? '')) return;
+  showError(e.message || 'an unexpected error');
+});
 window.addEventListener('unhandledrejection', (e) => {
   const r: unknown = e.reason;
   if (r instanceof Error && r.name === 'CancelledError') return;
@@ -42,7 +70,7 @@ function route() {
   try {
     if (page === 'leaderboard') void mountLeaderboard(root);
     else if (page === 'about') mountAbout(root);
-    else cleanup = mountPlay(root);
+    else cleanup = mountPlay(root, { tutorial: page === 'learn' });
   } catch (e) {
     root.innerHTML = `<section class="prose"><h1>Hasik couldn't start</h1>
       <p>Your browser is missing something the game needs (<span id="start-error"></span>).

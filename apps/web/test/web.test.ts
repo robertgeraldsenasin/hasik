@@ -27,6 +27,59 @@ describe('board layout', () => {
     for (const o of shellOffsets(3, 20, 10))
       expect(Math.hypot(o.dx, o.dy)).toBeLessThanOrEqual(10.0001);
   });
+
+  it('keeps every shell in its spot when another one lands (fixed capacity)', () => {
+    const before = shellOffsets(5, 9, 10, 14);
+    const after = shellOffsets(5, 10, 10, 14);
+    expect(after.slice(0, 9)).toEqual(before);
+    for (const o of shellOffsets(5, 40, 10, 14))
+      expect(Math.hypot(o.dx, o.dy)).toBeLessThanOrEqual(10.0001);
+  });
+});
+
+describe('portrait board layout', () => {
+  it('turns the board a quarter turn: your houses down the left, your store at the bottom', () => {
+    for (const flip of [false, true]) {
+      const L = computeLayout(390, flip, { orientation: 'portrait', maxHeight: 600 });
+      expect(L.orientation).toBe('portrait');
+      expect(L.height).toBeLessThanOrEqual(600);
+      const near = flip ? 8 : 0;
+      const far = flip ? 0 : 8;
+      for (let k = 0; k < 7; k++) {
+        expect(L.slots[near + k]!.x).toBeLessThan(L.width / 2);
+        expect(L.slots[far + k]!.x).toBeGreaterThan(L.width / 2);
+        if (k > 0) expect(L.slots[near + k]!.y).toBeGreaterThan(L.slots[near + k - 1]!.y);
+      }
+      for (let i = 0; i < 7; i++) expect(L.slots[i]!.y).toBeCloseTo(L.slots[14 - i]!.y, 6);
+      const myStore = flip ? 15 : 7;
+      const theirStore = flip ? 7 : 15;
+      expect(L.slots[myStore]!.y).toBeGreaterThan(L.height / 2);
+      expect(L.slots[theirStore]!.y).toBeLessThan(L.height / 2);
+    }
+  });
+
+  it('hit-tests every slot and keeps houses big enough to tap', () => {
+    const L = computeLayout(390, false, { orientation: 'portrait', maxHeight: 520 });
+    for (let i = 0; i < 16; i++) expect(hitTest(L, L.slots[i]!.x, L.slots[i]!.y)).toBe(i);
+    // The tap targets are max(44, 2r + 10) px; the pits themselves stay at least 36 px wide.
+    expect(L.slots[0]!.r * 2).toBeGreaterThanOrEqual(36);
+  });
+
+  it('never lets two houses overlap, in either orientation', () => {
+    for (const L of [
+      computeLayout(320, false, { orientation: 'portrait', maxHeight: 420 }),
+      computeLayout(1000, false),
+      computeLayout(600, true),
+    ]) {
+      for (let i = 0; i < 16; i++)
+        for (let j = i + 1; j < 16; j++) {
+          const a = L.slots[i]!;
+          const b = L.slots[j]!;
+          if (a.kind === 'store' || b.kind === 'store') continue;
+          expect(Math.hypot(a.x - b.x, a.y - b.y)).toBeGreaterThan(a.r + b.r);
+        }
+    }
+  });
 });
 
 describe('notation', () => {

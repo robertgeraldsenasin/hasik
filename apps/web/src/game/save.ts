@@ -22,6 +22,8 @@ export interface Settings {
   readonly sound: boolean;
   /** The how-to-play dialog opens by itself only on the first visit. */
   readonly seenHelp: boolean;
+  /** 'tilt' is the 2.5D table view, 'flat' looks straight down at the board. */
+  readonly view: 'tilt' | 'flat';
 }
 
 export interface SavedGame {
@@ -74,6 +76,7 @@ export function parseSettings(
     speed: typeof raw.speed === 'string' && speeds.includes(raw.speed) ? raw.speed : defaults.speed,
     sound: typeof raw.sound === 'boolean' ? raw.sound : defaults.sound,
     seenHelp: typeof raw.seenHelp === 'boolean' ? raw.seenHelp : defaults.seenHelp,
+    view: raw.view === 'tilt' || raw.view === 'flat' ? raw.view : defaults.view,
   };
 }
 

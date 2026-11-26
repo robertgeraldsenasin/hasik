@@ -46,12 +46,15 @@ export function mountAbout(root: HTMLElement): void {
       Long relays speed up so no move drags, and a tap on the board or the Space bar fast-forwards.</li>
       <li><strong>Hints, undo and saved games.</strong> The engine can score every move for you (gold marks the
       best). Games that use a hint or undo still play out but don't count in your record.</li>
+      <li><strong>A board you sit at.</strong> The board is drawn in 2.5D, as if you were sitting at it on a
+      mat by lamplight. If you'd rather count from straight above, press <kbd>V</kbd> or the view button.</li>
       <li><strong>Phones.</strong> Held upright, the board turns a quarter turn so the houses are big enough to
       tap with a thumb.</li>
     </ul>
 
     <h2>Keyboard</h2>
     <p><kbd>1</kbd>–<kbd>7</kbd> play your houses in sowing order, <kbd>H</kbd> hint, <kbd>U</kbd> undo,
-    <kbd>N</kbd> new game, <kbd>M</kbd> sound on or off, <kbd>Space</kbd> skip ahead, <kbd>?</kbd> rules.</p>
+    <kbd>N</kbd> new game, <kbd>M</kbd> sound on or off, <kbd>V</kbd> 2.5D or flat board, <kbd>Space</kbd> skip
+    ahead, <kbd>?</kbd> rules.</p>
   </section>`;
 }

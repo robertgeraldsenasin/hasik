@@ -14,6 +14,11 @@ Play experience and robustness in the web app, then a full redesign of the play 
 
 - New look: a carved, boat-shaped sungkaan on a banig mat, with saffron for you and rose for
   the bot everywhere (seats, scores, rings, effects). Dark theme only.
+- The board is 2.5D: seen through a tilted camera, it has thickness and a shadow on a woven
+  mat lit by a flickering lamp, store heaps grow as shells are banked, the hand floats over the
+  board and shells arc through the air with shadows. Each game opens with the camera swinging
+  down onto the table. `V` (or the view button) switches to a flat overhead view; the choice is
+  remembered.
 - The board is animated: shells are scooped into a hand that glides from pit to pit and drops
   one at a time, pits bounce and knock as shells land, relays are called out (_Tuloy_),
   captured shells fly to the store with a burst sized to the capture (_Kain +9_), and an

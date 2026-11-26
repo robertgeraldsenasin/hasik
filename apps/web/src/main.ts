@@ -25,7 +25,11 @@ function showError(message: string) {
   bar.append(text, close);
 }
 
-window.addEventListener('error', (e) => showError(e.message || 'an unexpected error'));
+window.addEventListener('error', (e) => {
+  // Browsers report this when a resize settles over two frames. It is harmless.
+  if (/ResizeObserver loop/.test(e.message ?? '')) return;
+  showError(e.message || 'an unexpected error');
+});
 window.addEventListener('unhandledrejection', (e) => {
   const r: unknown = e.reason;
   if (r instanceof Error && r.name === 'CancelledError') return;

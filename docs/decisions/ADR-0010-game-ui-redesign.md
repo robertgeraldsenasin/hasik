@@ -1,4 +1,4 @@
-# ADR-0010: An animated board scene, a played tutorial and a portrait layout
+# ADR-0010: A 2.5D animated board, a played tutorial and a portrait layout
 
 - **Status:** Accepted
 - **Date:** 2026-11-26
@@ -20,10 +20,13 @@ text dialog.
 2. **Adopt a game framework** (PixiJS, Phaser). Sprites, tweens and particles for free, at 100 KB or more
    of gzipped JavaScript for a page that was 16 KB, plus a second rendering model to learn and test.
 3. **A small animated scene of our own** on Canvas 2D, with DOM buttons laid over the pits.
+4. **Real 3D with WebGL** (three.js). Lighting and depth for free, but at least 150 KB of gzipped
+   JavaScript, a model pipeline for the board and shells, and a much harder time keeping text crisp and
+   hit targets exact.
 
 ## Decision
 
-Option 3.
+Option 3, drawn in 2.5D: a true perspective camera over a flat canvas.
 
 - **`board/scene.ts`** owns display counts and a scene clock. It plays a traced move as scoop, hand
   glide, drop with bounce, relay and capture flight, and resolves `false` when cancelled so the game-token
@@ -32,9 +35,21 @@ Option 3.
 - **`board/pacing.ts`** gives each move a time budget: about 115 ms per shell up to 2.6 s of sowing,
   with the first drops weighted slower. Tapping the board or pressing Space runs the scene clock 8 times
   faster. Pure and unit-tested.
+- **`board/camera.ts`** projects board space (the flat layout plus a height above the wood) through a
+  camera that tilts about the board's left-right axis: 50° from the table in landscape, a steeper 62° on
+  portrait phones so the far end doesn't shrink too much. Because it only tilts about that axis, a line
+  across the board stays horizontal on screen, so the scene lays the wood texture onto the tilted board
+  in 2-pixel horizontal strips with ordinary `drawImage`. The board gets thickness, a shadow on a woven
+  mat that fades into the page, shell heaps that grow in the stores, a hand that floats above the board,
+  and shells that arc through the air with a shadow under them. A new game opens with the camera swinging
+  down from overhead. Pure maths, unit-tested.
+- **A flat view.** `V` or the view button moves the camera straight overhead (pitch 90°), for anyone who
+  finds counting easier that way or gets motion-sick. The choice is saved with the other settings; old
+  saved settings load as the 2.5D view.
 - **Overlay buttons.** The seven house buttons sit exactly over the pits. They are the hit targets for
   mouse, touch, keyboard, screen readers and Playwright, so the canvas stays `aria-hidden` and nothing is
-  drawn twice. On touch, the first tap aims (preview) and the second sows.
+  drawn twice. They are placed from the projected outline of each pit, at least 44 px each way. On touch,
+  the first tap aims (preview) and the second sows.
 - **Portrait layout.** `computeLayout(width, flip, { orientation: 'portrait' })` turns the board a
   quarter turn clockwise when the page is narrower than 560 px and taller than wide. Sowing stays
   counter-clockwise and your store sits nearest your thumbs.
@@ -45,14 +60,17 @@ Option 3.
 
 ## Consequences
 
-- Saved settings, saved games and records keep their format; nothing in `localStorage` changes.
+- Saved games and records keep their format. Settings gain one field, `view`, which older saved
+  settings don't have; they load with the default.
+- In headless Chrome the scene holds 60 frames a second during a slow move, on a desktop viewport and on
+  a 390 px viewport at 3× pixel density. The texture is re-laid only on resize and while the camera moves.
 - The page costs more to download: the CI build of this change is 28.4 KB of gzipped JavaScript
   (75 KB minified) plus 5.1 KB of CSS, up from about 16 KB (ADR-0009). Still no framework and no
   images, fonts or audio files.
 - `board/renderer.ts` is gone. Its unit tests were on `layout.ts`, which keeps its API (one optional
   argument added).
 - The end-to-end tests change where the UI changed: the opponent and side are chosen in the picker, and
-  two tests were added (the full tutorial, and aim-then-sow on a phone viewport).
+  three tests were added (the full tutorial, aim-then-sow on a phone viewport, and the view switch).
 - The page is dark only. A light theme would need a second palette for the board art and is not planned.
 - Not done: pass-and-play for two people on one device, and a check with real players that the
   tutorial's five lessons are the right five.

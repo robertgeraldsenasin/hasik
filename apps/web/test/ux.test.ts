@@ -76,6 +76,7 @@ describe('saved settings', () => {
     speed: 'normal',
     sound: true,
     seenHelp: false,
+    view: 'tilt',
   };
   const ids = ['level-1', 'level-3', 'mcts'];
   const speeds = ['slow', 'normal', 'instant'];
@@ -91,11 +92,32 @@ describe('saved settings', () => {
       speed: 'warp',
       sound: false,
       seenHelp: 'yes',
+      view: 'isometric',
     });
     expect(parseSettings(text, defaults, ids, speeds)).toEqual({
       ...defaults,
       opponentId: 'mcts',
       sound: false,
+    });
+  });
+  it('remembers the flat view, and settings saved before the view existed still load', () => {
+    expect(parseSettings(JSON.stringify({ view: 'flat' }), defaults, ids, speeds).view).toBe(
+      'flat',
+    );
+    const old = JSON.stringify({
+      opponentId: 'level-1',
+      human: 1,
+      speed: 'slow',
+      sound: true,
+      seenHelp: true,
+    });
+    expect(parseSettings(old, defaults, ids, speeds)).toEqual({
+      opponentId: 'level-1',
+      human: 1,
+      speed: 'slow',
+      sound: true,
+      seenHelp: true,
+      view: 'tilt',
     });
   });
 });

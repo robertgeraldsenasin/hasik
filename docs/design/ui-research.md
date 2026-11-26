@@ -98,6 +98,21 @@ gave the page its background.
 | Tap targets                    | On a portrait phone the board turns a quarter turn. Houses are drawn about 42 px across and their buttons are at least 44 px.                                                                                                                                                           |
 | Motion settings                | Speed has four steps including instant. Reduced motion turns off shake, particles and ambient glow and starts at fast.                                                                                                                                                                  |
 
+## Going 2.5D
+
+The first pass drew the board from straight above. It played well but it looked like a diagram of a
+sungkaan rather than one on the floor in front of you. The second pass tilts the camera so you look down
+at the board the way you would sitting at it: it has thickness, it throws a shadow on a woven mat, the
+stores fill into heaps, and shells rise into a hand and arc through the air with a shadow under them.
+This is the Hearthstone argument again: the pleasure of a physical game is in handling physical things,
+and depth is a large part of what makes things look handleable.
+
+Two findings above set the limits. Clarity beats spectacle, so the tilt stays moderate (50° in landscape,
+62° on phones), the numbers stay upright and the preview still marks every pit. And motion has to be
+optional, so a flat overhead view is one key away (`V`) and reduced motion skips the camera sweep and the
+lamp flicker. True 3D with WebGL was ruled out for weight; the projection in `board/camera.ts` is about
+140 lines.
+
 ## Is it playable now?
 
 Yes, with one honest caveat. The rules were never the problem; Sungka has been played for centuries

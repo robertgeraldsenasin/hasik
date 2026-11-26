@@ -91,7 +91,7 @@ flowchart LR
   main[main.ts<br/>hash router · error notice] --> play[views/play.ts<br/>game loop]
   main --> lb[views/leaderboard.ts]
   main --> about[views/about.ts]
-  play --> board[board/scene.ts + pacing.ts + layout.ts<br/>animated Canvas scene]
+  play --> board[board/scene.ts + camera.ts + pacing.ts + layout.ts<br/>2.5D animated Canvas scene]
   play --> game[game/<br/>notation · preview · save · lessons]
   play --> ui[ui/icons.ts<br/>icons, opponent emblems]
   play --> help[views/help.ts]
@@ -101,18 +101,19 @@ flowchart LR
   worker --> analyze[worker/analyze.ts<br/>hint scores]
 ```
 
-| Module              | Does                                                                                      | Tested by                                                          |
-| ------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `views/play.ts`     | Game loop, tutorial, seats and dock, opponent picker, dialogs, keyboard                   | e2e (Playwright), desktop and phone viewports                      |
-| `game/preview.ts`   | What a house would do: landing slot, extra turn, relays, captures, store gain             | unit: agrees with the engine on every legal move of many positions |
-| `game/save.ts`      | Validated localStorage (settings, saved game, record); replay of saved moves; undo target | unit: malformed input, illegal replays, streaks                    |
-| `game/notation.ts`  | Move text, score formatting, per-player stats, share text                                 | unit                                                               |
-| `worker/analyze.ts` | Scores every legal move for hint mode                                                     | unit: exact score for a game-ending move                           |
-| `worker/client.ts`  | Request/response over `postMessage`; timeout; worker replacement; `CancelledError`        | e2e                                                                |
-| `board/layout.ts`   | Slot geometry in landscape and portrait, hit testing, stable shell spots                  | unit: opposite houses line up, no overlaps, tap sizes              |
-| `board/pacing.ts`   | Time budget per move, relay and capture pauses, speed scale                               | unit: long relays stay short, never slows down mid-move            |
-| `board/scene.ts`    | Animated scene: hand, drops, captures, preview beads, hint chips, bot telegraph           | e2e, screenshots                                                   |
-| `game/lessons.ts`   | The five tutorial positions and their copy                                                | unit: every lesson does what its text says                         |
+| Module              | Does                                                                                         | Tested by                                                          |
+| ------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `views/play.ts`     | Game loop, tutorial, seats and dock, opponent picker, dialogs, keyboard                      | e2e (Playwright), desktop and phone viewports                      |
+| `game/preview.ts`   | What a house would do: landing slot, extra turn, relays, captures, store gain                | unit: agrees with the engine on every legal move of many positions |
+| `game/save.ts`      | Validated localStorage (settings, saved game, record); replay of saved moves; undo target    | unit: malformed input, illegal replays, streaks                    |
+| `game/notation.ts`  | Move text, score formatting, per-player stats, share text                                    | unit                                                               |
+| `worker/analyze.ts` | Scores every legal move for hint mode                                                        | unit: exact score for a game-ending move                           |
+| `worker/client.ts`  | Request/response over `postMessage`; timeout; worker replacement; `CancelledError`           | e2e                                                                |
+| `board/layout.ts`   | Slot geometry in landscape and portrait, hit testing, stable shell spots                     | unit: opposite houses line up, no overlaps, tap sizes              |
+| `board/camera.ts`   | 2.5D projection: board space to screen for a tilted or overhead camera, fitted to the canvas | unit: near is lower and bigger, lines stay level, everything fits  |
+| `board/pacing.ts`   | Time budget per move, relay and capture pauses, speed scale                                  | unit: long relays stay short, never slows down mid-move            |
+| `board/scene.ts`    | Animated scene: hand, drops, captures, preview beads, hint chips, bot telegraph              | e2e, screenshots                                                   |
+| `game/lessons.ts`   | The five tutorial positions and their copy                                                   | unit: every lesson does what its text says                         |
 
 ### The game loop
 

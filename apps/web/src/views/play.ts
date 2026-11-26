@@ -133,6 +133,7 @@ export function mountPlay(root: HTMLElement, opts: PlayOptions = {}): () => void
     speed: reducedMotion() ? 'fast' : 'normal',
     sound: true,
     seenHelp: false,
+    view: 'tilt',
   };
   let settings = parseSettings(store.get(KEYS.settings), defaults, OPPONENT_IDS, [...SPEEDS]);
   const params = new URLSearchParams(location.search);
@@ -156,6 +157,7 @@ export function mountPlay(root: HTMLElement, opts: PlayOptions = {}): () => void
   const setup = $<HTMLDialogElement>('setup');
   const result = $<HTMLDialogElement>('result');
   scene.reducedMotion = reducedMotion();
+  scene.view = settings.view;
   scene.onLand = (kind, step) => sound.land(kind, step);
   scene.onScoop = (relay) => sound.scoop(relay);
   scene.onCapture = (n) => sound.capture(n);
@@ -208,6 +210,7 @@ export function mountPlay(root: HTMLElement, opts: PlayOptions = {}): () => void
       speed,
       sound: sound.enabled,
       seenHelp: settings.seenHelp,
+      view: scene.view,
     };
     store.set(KEYS.settings, JSON.stringify(settings));
   }
@@ -402,6 +405,13 @@ export function mountPlay(root: HTMLElement, opts: PlayOptions = {}): () => void
     $<HTMLButtonElement>('hint').disabled = inLesson() || !mine || hinting;
     $<HTMLButtonElement>('undo').disabled = inLesson() || undoTarget(positions, human) === null;
     $('speed-label').textContent = SPEED_LABEL[speed];
+    const tilted = scene.view === 'tilt';
+    $('view').innerHTML =
+      `${tilted ? ICONS.viewTilt : ICONS.viewFlat}<span>${tilted ? '2.5D' : 'Flat'}</span><kbd>V</kbd>`;
+    $('view').setAttribute(
+      'aria-label',
+      tilted ? 'Board view: 2.5D table. Switch to flat' : 'Board view: flat. Switch to 2.5D table',
+    );
     $('speed').setAttribute('aria-label', `Animation speed: ${SPEED_LABEL[speed]}`);
     $('sound').setAttribute('aria-pressed', String(sound.enabled));
     $('sound').innerHTML =
@@ -430,9 +440,26 @@ export function mountPlay(root: HTMLElement, opts: PlayOptions = {}): () => void
     updateScores(Array.from(current().slots));
   }
 
-  // ---- Board size and orientation.
+  // ---- Board size, orientation and camera.
+  function placeButtons() {
+    const { width, height } = scene.canvasSize;
+    stage.style.width = `${width}px`;
+    stage.style.height = `${height}px`;
+    buttons.forEach((b, k) => {
+      const box = scene.pitBox(base() + k);
+      const w = Math.max(44, Math.round(box.w + 8));
+      const h = Math.max(44, Math.round(box.h + 8));
+      b.style.left = `${Math.round(box.x + box.w / 2 - w / 2)}px`;
+      b.style.top = `${Math.round(box.y + box.h / 2 - h / 2)}px`;
+      b.style.width = `${w}px`;
+      b.style.height = `${h}px`;
+    });
+  }
+  scene.onProjection = placeButtons;
+
   let lastSize = '';
-  function resize(force = false) {
+  /** Fit the board to the page. `sweep` swings the camera down onto the table. */
+  function resize(force = false, sweep = false) {
     const w = wrap.clientWidth;
     if (w <= 0) return;
     const portrait = w < 560 && window.innerHeight > window.innerWidth * 1.1;
@@ -443,17 +470,8 @@ export function mountPlay(root: HTMLElement, opts: PlayOptions = {}): () => void
     if (!force && key === lastSize) return;
     lastSize = key;
     scene.human = me();
-    const L = scene.resize(width, orientation, maxH);
-    stage.style.width = `${L.width}px`;
-    stage.style.height = `${L.height}px`;
+    scene.resize(width, orientation, maxH, sweep && speed !== 'instant');
     root.querySelector('.play')!.classList.toggle('portrait', portrait);
-    buttons.forEach((b, k) => {
-      const g = L.slots[base() + k]!;
-      const size = Math.max(44, Math.round(g.r * 2 + 10));
-      b.style.left = `${Math.round(g.x - size / 2)}px`;
-      b.style.top = `${Math.round(g.y - size / 2)}px`;
-      b.style.width = b.style.height = `${size}px`;
-    });
     if (!scene.animating) scene.setCounts(current().slots);
   }
 
@@ -816,7 +834,7 @@ export function mountPlay(root: HTMLElement, opts: PlayOptions = {}): () => void
     $('retry').hidden = true;
     if (result.open) result.close();
     shownScores = { you: -1, bot: -1 };
-    resize(true);
+    resize(true, true);
   }
 
   function newGame(opponentId = opponent.id, side: Player = human) {
@@ -1003,6 +1021,12 @@ export function mountPlay(root: HTMLElement, opts: PlayOptions = {}): () => void
     toast(sound.enabled ? 'Sound on' : 'Sound off');
   }
 
+  function toggleView() {
+    scene.setView(scene.view === 'tilt' ? 'flat' : 'tilt');
+    saveSettings();
+    refreshChrome();
+  }
+
   function cycleSpeed() {
     speed = SPEEDS[(SPEEDS.indexOf(speed) + 1) % SPEEDS.length]!;
     saveSettings();
@@ -1016,6 +1040,7 @@ export function mountPlay(root: HTMLElement, opts: PlayOptions = {}): () => void
   $('undo').onclick = undo;
   $('retry').onclick = () => void botTurn();
   $('speed').onclick = cycleSpeed;
+  $('view').onclick = toggleView;
   $('sound').onclick = toggleSound;
   $('coach-skip').onclick = () => endTutorial(false);
   $('coach-replay').onclick = () => {
@@ -1087,6 +1112,10 @@ export function mountPlay(root: HTMLElement, opts: PlayOptions = {}): () => void
       case 'M':
         toggleSound();
         break;
+      case 'v':
+      case 'V':
+        toggleView();
+        break;
       case '?':
         openHelp();
         break;
@@ -1098,7 +1127,13 @@ export function mountPlay(root: HTMLElement, opts: PlayOptions = {}): () => void
   window.addEventListener('keydown', onKey);
   const onWindowResize = () => resize();
   window.addEventListener('resize', onWindowResize);
-  const ro = new ResizeObserver(() => resize());
+  // Resizing changes the board's height, which the observer would see again in the same
+  // frame; doing the work in the next frame keeps the observer out of a loop.
+  let resizeFrame = 0;
+  const ro = new ResizeObserver(() => {
+    cancelAnimationFrame(resizeFrame);
+    resizeFrame = requestAnimationFrame(() => resize());
+  });
   ro.observe(wrap);
 
   if (!resume()) newGame();
@@ -1110,6 +1145,7 @@ export function mountPlay(root: HTMLElement, opts: PlayOptions = {}): () => void
     worker.cancel();
     scene.destroy();
     ro.disconnect();
+    cancelAnimationFrame(resizeFrame);
     window.removeEventListener('keydown', onKey);
     window.removeEventListener('resize', onWindowResize);
   };
@@ -1172,6 +1208,7 @@ function template(): string {
         <button id="retry" class="tool warn" type="button" hidden>${ICONS.retry}<span>Retry bot move</span></button>
         <span class="dock-gap"></span>
         <button id="speed" class="tool" type="button" data-testid="speed">${ICONS.speed}<span id="speed-label">Normal</span></button>
+        <button id="view" class="tool" type="button" data-testid="view" aria-keyshortcuts="v"></button>
         <button id="sound" class="tool" type="button" data-testid="sound" aria-keyshortcuts="m" aria-pressed="true"></button>
         <button id="help-btn" class="tool" type="button" data-testid="help" aria-keyshortcuts="?">${ICONS.rules}<span>Rules</span><kbd>?</kbd></button>
         <button id="new-game" class="tool primary" type="button" data-testid="new-game" aria-keyshortcuts="n">${ICONS.newGame}<span>New game</span><kbd>N</kbd></button>

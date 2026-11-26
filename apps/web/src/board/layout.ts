@@ -91,7 +91,7 @@ function portrait(width: number, flip: boolean, maxHeight?: number): BoardLayout
     Math.max(width * 1.15, Math.min(width * PORTRAIT_ASPECT, maxHeight ?? Infinity)),
   );
   const pad = height * 0.025;
-  const storeH = height * 0.12;
+  const storeH = height * 0.105;
   const top = pad + storeH;
   const bottom = height - pad - storeH;
   const rowH = (bottom - top) / 7;

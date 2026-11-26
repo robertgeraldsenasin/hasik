@@ -125,6 +125,22 @@ test('the tutorial walks through all five lessons, then offers an opponent', asy
   await expect(page).toHaveURL(/#\/play$/);
 });
 
+test('the board switches between the 2.5D table and a flat view, and remembers it', async ({
+  page,
+}) => {
+  await page.goto('/?anim=instant');
+  await dismissHelp(page);
+  const view = page.getByTestId('view');
+  await expect(view).toContainText('2.5D');
+  await view.click();
+  await expect(view).toContainText('Flat');
+  // The house buttons follow the board, so moves still work after the switch.
+  await page.getByTestId('house-1').click();
+  await expect(page.locator('[data-testid="move-log"] li')).toHaveCount(1);
+  await page.reload();
+  await expect(page.getByTestId('view')).toContainText('Flat');
+});
+
 test.describe('on a phone', () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
 

@@ -19,6 +19,8 @@ export const ICONS = {
   rules: svg(
     '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/>',
   ),
+  viewTilt: svg('<path d="M12 3 21 8v8l-9 5-9-5V8z"/><path d="M3 8l9 5 9-5M12 13v8"/>'),
+  viewFlat: svg('<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 12h16M12 4v16"/>'),
   newGame: svg('<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>'),
   close: svg('<path d="M6 6l12 12M18 6 6 18"/>'),
 } as const;

@@ -90,7 +90,8 @@ export function helpDialogHtml(): string {
       ).join('')}
     </ol>
     <p class="keys small"><kbd>1</kbd>–<kbd>7</kbd> play a house, <kbd>H</kbd> hint, <kbd>U</kbd> undo,
-    <kbd>N</kbd> new game, <kbd>M</kbd> sound, <kbd>Space</kbd> skip an animation, <kbd>?</kbd> rules</p>
+    <kbd>N</kbd> new game, <kbd>M</kbd> sound, <kbd>V</kbd> 2.5D or flat board, <kbd>Space</kbd> skip an
+    animation, <kbd>?</kbd> rules</p>
     <form method="dialog" class="help-actions">
       <button class="btn" value="tutorial" data-testid="start-tutorial">Teach me with 5 moves</button>
       <button class="btn" value="ok" id="help-ok">Start playing</button>
